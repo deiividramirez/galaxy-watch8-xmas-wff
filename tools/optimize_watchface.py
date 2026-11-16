@@ -484,16 +484,22 @@ def stage4_validate_build_and_measure_memory() -> dict:
 
 
 def main() -> int:
+    skip_stage1 = "--skip-stage1" in sys.argv[1:]
     print("======================================================================")
     print("  GALAXY WATCH 8 HOLIDAY WFF v4 — BATTERY, ASSET & MEMORY OPTIMIZER")
     print("======================================================================")
-    s1 = stage1_optimize_drawables()
+    if skip_stage1 and REPORT_JSON.is_file():
+        prev = json.loads(REPORT_JSON.read_text(encoding="utf-8"))
+        s1 = prev.get("stage1_drawables", {})
+        print("\n[Stage 1/4] Drawables unchanged — skipping WebP re-encode (--skip-stage1).")
+    else:
+        s1 = stage1_optimize_drawables()
     s2 = stage2_audit_clip_and_bezel_geometry()
     s3 = stage3_amoled_opr_and_power_profile()
     s4 = stage4_validate_build_and_measure_memory()
 
     report = {
-        "version": "2.3.1",
+        "version": "2.3.2",
         "baseline_v20": V20_BASELINE,
         "stage1_drawables": s1,
         "stage2_geometry_audit": s2,

@@ -75,7 +75,11 @@ fi
 if [[ "${NEEDS_APK}" -eq 1 && "${SKIP_APK_BUILD:-0}" != "1" ]]; then
   if has_local_android_toolchain; then
     echo "[pre-commit] Rebuilding & validating Watch 8 APK with updated version..."
-    "${REPO_ROOT}/optimize_watchface.sh"
+    if git diff --cached --name-only | grep -Eq '^watchface/app/src/main/res/drawable'; then
+      "${REPO_ROOT}/optimize_watchface.sh"
+    else
+      run_py "${REPO_ROOT}/tools/optimize_watchface.py" --skip-stage1
+    fi
   else
     echo "[pre-commit] Local Android SDK/JDK not detected — skipping local APK rebuild (CI will build & validate)."
   fi

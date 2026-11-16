@@ -10,8 +10,8 @@ android {
         applicationId = "io.github.watch8.xmasface"
         minSdk = 34
         targetSdk = 36
-        versionCode = 8
-        versionName = "2.3.1"
+        versionCode = 9
+        versionName = "2.3.2"
     }
 
     buildTypes {

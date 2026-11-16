@@ -1,5 +1,5 @@
 {
-  "version": "2.3.1",
+  "version": "2.3.2",
   "baseline_v20": {
     "drawables_kb": 532.5,
     "apk_kb": 567.0,
@@ -93,7 +93,7 @@
   },
   "stage4_wff_build_memory": {
     "apk_path": "watch8-holiday-xmas.apk",
-    "apk_kb": 324.0,
+    "apk_kb": 310.6,
     "dex_files": 0,
     "signature_verified": true,
     "max_active_mb": 8.98,
@@ -101,7 +101,7 @@
     "savings_vs_v20": {
       "active_ram_saved_pct": 48.1,
       "ambient_ram_saved_pct": 19.9,
-      "apk_size_saved_pct": 42.9
+      "apk_size_saved_pct": 45.2
     }
   }
 }
