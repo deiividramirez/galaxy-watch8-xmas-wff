@@ -110,16 +110,19 @@ def stage1_optimize_drawables() -> dict:
             candidates.append(("png_opt9", buf_png.getvalue()))
 
         best_mode, best_data = min(candidates, key=lambda item: len(item[1]))
-        if len(best_data) <= orig_size or cleaned_px > 0:
+        # Avoid repeated lossy generation-loss re-encoding on already-optimized WebP assets
+        if best_mode == "perceptual_q88":
+            should_write = len(best_data) < int(orig_size * 0.95)
+        else:
+            should_write = len(best_data) < orig_size or cleaned_px > 0
+        if should_write:
             path.write_bytes(best_data)
+            html_target = HTML_ICONS / path.name
+            if html_target.exists():
+                shutil.copy2(path, html_target)
 
         new_size = path.stat().st_size
         after_bytes += new_size
-
-        # Sync shared icons/skies/hands to HTML simulator
-        html_target = HTML_ICONS / path.name
-        if html_target.exists():
-            shutil.copy2(path, html_target)
 
     print(f"  - Referenced drawables kept : {len(list(RES_DRAWABLE.iterdir()))} (pruned {len(pruned_files)} unreferenced)")
     print(f"  - Transparent pixels zeroed : {cleaned_pixels_total:,} px")

@@ -13,7 +13,7 @@
     "pruned_files": [],
     "zeroed_transparent_pixels": 375504,
     "drawables_kb_pre_pass": 275.12,
-    "drawables_kb_optimized": 273.67
+    "drawables_kb_optimized": 274.92
   },
   "stage2_geometry_audit": {
     "passed": true,
@@ -93,7 +93,7 @@
   },
   "stage4_wff_build_memory": {
     "apk_path": "watch8-holiday-xmas.apk",
-    "apk_kb": 309.2,
+    "apk_kb": 324.0,
     "dex_files": 0,
     "signature_verified": true,
     "max_active_mb": 8.98,
@@ -101,7 +101,7 @@
     "savings_vs_v20": {
       "active_ram_saved_pct": 48.1,
       "ambient_ram_saved_pct": 19.9,
-      "apk_size_saved_pct": 45.5
+      "apk_size_saved_pct": 42.9
     }
   }
 }
