@@ -1,0 +1,1713 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WatchFace width="450" height="450" clipShape="CIRCLE">
+    <Metadata key="CLOCK_TYPE" value="DIGITAL" />
+    <Metadata key="PREVIEW_TIME" value="08:52:00" />
+    <Metadata key="STEP_GOAL" value="10000" />
+
+    <!-- ================================================================== -->
+    <!-- USER CONFIGURATIONS (v2.2 Crash-Free + Highlight & Swatch Icons)   -->
+    <!-- ================================================================== -->
+    <UserConfigurations>
+        <!-- 1. Holiday Color Theme: [0]=Primary Accent, [1]=Gold/Ice Highlight, [2]=Card Surface -->
+        <ColorConfiguration
+            id="color_theme"
+            displayName="cfg_theme_label"
+            screenReaderText="cfg_theme_label"
+            icon="icon_color_theme"
+            highlight="hl_color_theme"
+            defaultValue="cranberry">
+            <ColorOption
+                id="cranberry"
+                displayName="theme_cranberry_label"
+                screenReaderText="theme_cranberry_label"
+                icon="opt_theme_cranberry"
+                colors="#FFD42426 #FFF5C542 #FF163020" />
+            <ColorOption
+                id="frost"
+                displayName="theme_frost_label"
+                screenReaderText="theme_frost_label"
+                icon="opt_theme_frost"
+                colors="#FF64B5F6 #FFE3F2FD #FF0D1B2A" />
+            <ColorOption
+                id="evergreen"
+                displayName="theme_evergreen_label"
+                screenReaderText="theme_evergreen_label"
+                icon="opt_theme_evergreen"
+                colors="#FF2E7D32 #FFFFCDD2 #FF0F2417" />
+        </ColorConfiguration>
+
+        <!-- 2. Centerpiece Artwork Style (2 Built-in Presets + Custom Phone Photo!) -->
+        <ListConfiguration
+            id="centerpiece_style"
+            displayName="cfg_portrait_label"
+            screenReaderText="cfg_portrait_label"
+            icon="icon_portrait_style"
+            highlight="hl_portrait_style"
+            defaultValue="primary">
+            <ListOption id="primary" displayName="portrait_primary_label" screenReaderText="portrait_primary_label" icon="opt_centerpiece_primary" />
+            <ListOption id="alt" displayName="portrait_alt_label" screenReaderText="portrait_alt_label" icon="opt_centerpiece_alt" />
+            <ListOption id="custom_photo" displayName="portrait_custom_label" screenReaderText="portrait_custom_label" icon="opt_centerpiece_custom" />
+        </ListConfiguration>
+
+        <!-- 2b. Native Companion App Custom Photo Picker (WFF v4 PhotosConfiguration) -->
+        <PhotosConfiguration
+            id="custom_photo"
+            configType="SINGLE" />
+
+        <!-- 3. Keep Info Visible When Watch Is Locked -->
+        <BooleanConfiguration
+            id="lock_info_visible"
+            displayName="cfg_lock_info_label"
+            screenReaderText="cfg_lock_info_label"
+            icon="icon_lock_info"
+            highlight="hl_lock_info"
+            defaultValue="TRUE" />
+
+        <!-- 4. Falling Xmas Snow & Wrist-Tilt Parallax Toggle -->
+        <BooleanConfiguration
+            id="snow_enabled"
+            displayName="cfg_snow_label"
+            screenReaderText="cfg_snow_label"
+            icon="icon_snow_toggle"
+            highlight="hl_snow_toggle"
+            defaultValue="TRUE" />
+
+        <!-- 5. Smart Battery Saver / Power Mode -->
+        <ListConfiguration
+            id="power_mode"
+            displayName="cfg_power_label"
+            screenReaderText="cfg_power_label"
+            icon="icon_power_mode"
+            highlight="hl_power_mode"
+            defaultValue="auto_eco">
+            <ListOption id="auto_eco" displayName="power_auto_eco_label" screenReaderText="power_auto_eco_label" icon="opt_power_eco" />
+            <ListOption id="max_battery" displayName="power_max_battery_label" screenReaderText="power_max_battery_label" icon="opt_power_max" />
+            <ListOption id="vivid_always" displayName="power_vivid_label" screenReaderText="power_vivid_label" icon="opt_power_vivid" />
+        </ListConfiguration>
+
+        <!-- 6. Clock Mode: Digital (default), Analog Only, or Hybrid -->
+        <ListConfiguration
+            id="clock_mode"
+            displayName="cfg_clock_label"
+            screenReaderText="cfg_clock_label"
+            icon="icon_clock_mode"
+            highlight="hl_clock_mode"
+            defaultValue="digital">
+            <ListOption id="digital" displayName="clock_digital_label" screenReaderText="clock_digital_label" icon="opt_clock_digital" />
+            <ListOption id="analog" displayName="clock_analog_label" screenReaderText="clock_analog_label" icon="opt_clock_analog" />
+            <ListOption id="hybrid" displayName="clock_hybrid_label" screenReaderText="clock_hybrid_label" icon="opt_clock_hybrid" />
+        </ListConfiguration>
+    </UserConfigurations>
+
+    <!-- ================================================================== -->
+    <!-- MAIN 450x450 SCENE (V2.2 ZERO-LAG, FLAT CONFIGS & FULL COMPS)      -->
+    <!-- ================================================================== -->
+    <Scene backgroundColor="#FF000000">
+
+        <!-- 1. Cozy Holiday Radial Dial Backdrop + Outer Rim Minute Ticks -->
+        <Group name="backdrop_layer" x="0" y="0" width="450" height="450" alpha="255">
+            <Variant mode="AMBIENT" target="alpha" value="0" />
+            <PartImage x="0" y="0" width="450" height="450">
+                <Image resource="dial_backdrop" />
+            </PartImage>
+        </Group>
+
+        <!-- 2. LIVE WEATHER SKY AMBIENCE LAYER -->
+        <Group name="live_weather_sky_group" x="0" y="0" width="450" height="450" alpha="245">
+            <Variant mode="AMBIENT" target="alpha" value="0" />
+            <Condition>
+                <Expressions>
+                    <Expression name="sky_sunny_day"><![CDATA[[WEATHER.IS_AVAILABLE] == 1 && ([WEATHER.CONDITION] == 8 || ([WEATHER.CONDITION] == 1 && [WEATHER.IS_DAY] == 1))]]></Expression>
+                    <Expression name="sky_partly_day"><![CDATA[[WEATHER.IS_AVAILABLE] == 1 && [WEATHER.CONDITION] == 14 && [WEATHER.IS_DAY] == 1]]></Expression>
+                    <Expression name="sky_starry_night"><![CDATA[([WEATHER.IS_AVAILABLE] == 1 && [WEATHER.IS_DAY] == 0 && ([WEATHER.CONDITION] == 1 || [WEATHER.CONDITION] == 14)) || ([WEATHER.IS_AVAILABLE] == 0 && ([HOUR_0_23] < 6 || [HOUR_0_23] >= 19))]]></Expression>
+                    <Expression name="sky_rain_storm"><![CDATA[[WEATHER.IS_AVAILABLE] == 1 && ([WEATHER.CONDITION] == 4 || [WEATHER.CONDITION] == 6 || [WEATHER.CONDITION] == 9 || [WEATHER.CONDITION] == 12)]]></Expression>
+                    <Expression name="sky_cloudy_wind_fog"><![CDATA[[WEATHER.IS_AVAILABLE] == 1 && ([WEATHER.CONDITION] == 2 || [WEATHER.CONDITION] == 3 || [WEATHER.CONDITION] == 13 || [WEATHER.CONDITION] == 15)]]></Expression>
+                </Expressions>
+                <Compare expression="sky_sunny_day">
+                    <PartImage x="0" y="0" width="450" height="450"><Image resource="sky_sunny" /></PartImage>
+                </Compare>
+                <Compare expression="sky_partly_day">
+                    <PartImage x="0" y="0" width="450" height="450"><Image resource="sky_partly_cloudy" /></PartImage>
+                </Compare>
+                <Compare expression="sky_starry_night">
+                    <PartImage x="0" y="0" width="450" height="450"><Image resource="sky_starry_night" /></PartImage>
+                </Compare>
+                <Compare expression="sky_rain_storm">
+                    <PartImage x="0" y="0" width="450" height="450"><Image resource="sky_rain_storm" /></PartImage>
+                </Compare>
+                <Compare expression="sky_cloudy_wind_fog">
+                    <PartImage x="0" y="0" width="450" height="450"><Image resource="sky_cloudy_mist" /></PartImage>
+                </Compare>
+                <Default>
+                    <PartImage x="0" y="0" width="450" height="450"><Image resource="sky_partly_cloudy" /></PartImage>
+                </Default>
+            </Condition>
+        </Group>
+
+        <!-- Subtle Theme Color Wash Ring Around Outer Rim -->
+        <PartDraw x="0" y="0" width="450" height="450" alpha="85">
+            <Variant mode="AMBIENT" target="alpha" value="0" />
+            <Ellipse x="6" y="6" width="438" height="438">
+                <Stroke color="[CONFIGURATION.color_theme.0]" thickness="3" />
+            </Ellipse>
+        </PartDraw>
+
+        <!-- 3. Centerpiece Medallion (SINGLE flat centerpiece_style config + Native Phone Photo Mask) -->
+        <Group name="centerpiece_active_group" x="151" y="151" width="148" height="148" alpha="255">
+            <Variant mode="AMBIENT" target="alpha" value="0" />
+            <Gyro
+                x="(3.0 / 90.0) * clamp([ACCELEROMETER_ANGLE_X], -90, 90)"
+                y="(3.0 / 90.0) * clamp([ACCELEROMETER_ANGLE_Y], -90, 90)" />
+
+            <PartDraw x="0" y="0" width="148" height="148" alpha="225">
+                <Ellipse x="2" y="2" width="144" height="144">
+                    <Fill color="[CONFIGURATION.color_theme.2]" />
+                </Ellipse>
+            </PartDraw>
+
+            <ListConfiguration id="centerpiece_style">
+                <ListOption id="primary">
+                    <PartImage x="0" y="0" width="148" height="148">
+                        <Image resource="centerpiece_primary" />
+                    </PartImage>
+                </ListOption>
+                <ListOption id="alt">
+                    <PartImage x="0" y="0" width="148" height="148">
+                        <Image resource="centerpiece_alt" />
+                    </PartImage>
+                </ListOption>
+                <ListOption id="custom_photo">
+                    <Group name="custom_photo_masked_grp" x="0" y="0" width="148" height="148">
+                        <PartImage x="0" y="0" width="148" height="148">
+                            <Photos
+                                source="[CONFIGURATION.custom_photo]"
+                                defaultImageResource="centerpiece_primary"
+                                width="180"
+                                height="180" />
+                        </PartImage>
+                        <PartDraw x="0" y="0" width="148" height="148" renderMode="MASK">
+                            <Ellipse x="2" y="2" width="144" height="144">
+                                <Fill color="#FFFFFFFF" />
+                            </Ellipse>
+                        </PartDraw>
+                    </Group>
+                </ListOption>
+            </ListConfiguration>
+
+            <PartDraw x="0" y="0" width="148" height="148" alpha="240">
+                <Ellipse x="2" y="2" width="144" height="144">
+                    <Stroke color="[CONFIGURATION.color_theme.1]" thickness="2.6" />
+                </Ellipse>
+            </PartDraw>
+        </Group>
+
+        <!-- Burn-In-Safe Always-On Display (AOD) Line-Art Centerpiece (< 4% OPR) -->
+        <PartImage x="151" y="151" width="148" height="148" alpha="0">
+            <Variant mode="AMBIENT" target="alpha" value="215" />
+            <Image resource="centerpiece_aod" />
+        </PartImage>
+
+        <!-- 4. High-Visibility Live Christmas Countdown Banner (x=139, y=31, w=172, h=28) -->
+        <Group name="xmas_countdown_banner" x="139" y="31" width="172" height="28" alpha="255">
+            <PartDraw x="0" y="0" width="172" height="28" alpha="230">
+                <Variant mode="AMBIENT" target="alpha" value="0" />
+                <RoundRectangle x="1" y="1" width="170" height="26" cornerRadiusX="13" cornerRadiusY="13">
+                    <Fill color="[CONFIGURATION.color_theme.2]" />
+                    <Stroke color="[CONFIGURATION.color_theme.0]" thickness="1.8" />
+                </RoundRectangle>
+            </PartDraw>
+
+            <Condition>
+                <Expressions>
+                    <Expression name="is_xmas_day"><![CDATA[[MONTH] == 12 && [DAY] == 25]]></Expression>
+                    <Expression name="is_xmas_eve"><![CDATA[[MONTH] == 12 && [DAY] == 24]]></Expression>
+                    <Expression name="is_after_xmas"><![CDATA[[MONTH] == 12 && [DAY] > 25]]></Expression>
+                </Expressions>
+                <Compare expression="is_xmas_day">
+                    <PartText x="6" y="2" width="160" height="24" alpha="255">
+                        <Variant mode="AMBIENT" target="alpha" value="180" />
+                        <Text align="CENTER" maxLines="1" isAutoSize="TRUE">
+                            <Font family="SYNC_TO_DEVICE" size="16" weight="EXTRA_BOLD" color="[CONFIGURATION.color_theme.1]">MERRY XMAS!</Font>
+                        </Text>
+                    </PartText>
+                </Compare>
+                <Compare expression="is_xmas_eve">
+                    <PartText x="6" y="2" width="160" height="24" alpha="255">
+                        <Variant mode="AMBIENT" target="alpha" value="180" />
+                        <Text align="CENTER" maxLines="1" isAutoSize="TRUE">
+                            <Font family="SYNC_TO_DEVICE" size="16" weight="EXTRA_BOLD" color="[CONFIGURATION.color_theme.1]">XMAS EVE!</Font>
+                        </Text>
+                    </PartText>
+                </Compare>
+                <Compare expression="is_after_xmas">
+                    <PartText x="6" y="2" width="160" height="24" alpha="255">
+                        <Variant mode="AMBIENT" target="alpha" value="175" />
+                        <Text align="CENTER" maxLines="1" isAutoSize="TRUE">
+                            <Font family="SYNC_TO_DEVICE" size="16" weight="EXTRA_BOLD" color="[CONFIGURATION.color_theme.1]">
+                                <Template>%dD TO XMAS<Parameter expression="(31 - [DAY]) + ((([YEAR] + 1) % 4 == 0 &amp;&amp; (([YEAR] + 1) % 100 != 0 || ([YEAR] + 1) % 400 == 0)) ? 360 : 359)" /></Template>
+                            </Font>
+                        </Text>
+                    </PartText>
+                </Compare>
+                <Default>
+                    <PartText x="6" y="2" width="160" height="24" alpha="255">
+                        <Variant mode="AMBIENT" target="alpha" value="175" />
+                        <Text align="CENTER" maxLines="1" isAutoSize="TRUE">
+                            <Font family="SYNC_TO_DEVICE" size="16" weight="EXTRA_BOLD" color="[CONFIGURATION.color_theme.1]">
+                                <Template>%dD TO XMAS<Parameter expression="(([YEAR] % 4 == 0 &amp;&amp; ([YEAR] % 100 != 0 || [YEAR] % 400 == 0)) ? 360 : 359) - [DAY_OF_YEAR]" /></Template>
+                            </Font>
+                        </Text>
+                    </PartText>
+                </Default>
+            </Condition>
+        </Group>
+
+        <!-- ================================================================== -->
+        <!-- 5. CAPSULE SHELLS + LOCK-SCREEN INFO VISIBILITY LAYER              -->
+        <!--    (SINGLE flat lock_info_visible BooleanConfiguration!)           -->
+        <!-- ================================================================== -->
+        <Group name="capsule_shells_group" x="0" y="0" width="450" height="450" alpha="255">
+            <Variant mode="AMBIENT" target="alpha" value="0" />
+            <!-- Slot 1 Shell -->
+            <PartDraw x="28" y="146" width="114" height="72">
+                <RoundRectangle x="1" y="1" width="112" height="70" cornerRadiusX="25" cornerRadiusY="25">
+                    <Fill color="[CONFIGURATION.color_theme.2]" />
+                    <Stroke color="[CONFIGURATION.color_theme.1]" thickness="1.6" />
+                </RoundRectangle>
+            </PartDraw>
+            <!-- Slot 2 Shell -->
+            <PartDraw x="308" y="146" width="114" height="72">
+                <RoundRectangle x="1" y="1" width="112" height="70" cornerRadiusX="25" cornerRadiusY="25">
+                    <Fill color="[CONFIGURATION.color_theme.2]" />
+                    <Stroke color="[CONFIGURATION.color_theme.1]" thickness="1.6" />
+                </RoundRectangle>
+            </PartDraw>
+            <!-- Slot 3 Shell -->
+            <PartDraw x="28" y="232" width="114" height="72">
+                <RoundRectangle x="1" y="1" width="112" height="70" cornerRadiusX="25" cornerRadiusY="25">
+                    <Fill color="[CONFIGURATION.color_theme.2]" />
+                    <Stroke color="[CONFIGURATION.color_theme.1]" thickness="1.6" />
+                </RoundRectangle>
+            </PartDraw>
+            <!-- Slot 4 Shell -->
+            <PartDraw x="308" y="232" width="114" height="72">
+                <RoundRectangle x="1" y="1" width="112" height="70" cornerRadiusX="25" cornerRadiusY="25">
+                    <Fill color="[CONFIGURATION.color_theme.2]" />
+                    <Stroke color="[CONFIGURATION.color_theme.1]" thickness="1.6" />
+                </RoundRectangle>
+            </PartDraw>
+            <!-- Slot 5 Shell -->
+            <PartDraw x="119" y="316" width="212" height="52">
+                <RoundRectangle x="1" y="1" width="210" height="50" cornerRadiusX="25" cornerRadiusY="25">
+                    <Fill color="[CONFIGURATION.color_theme.2]" />
+                    <Stroke color="[CONFIGURATION.color_theme.1]" thickness="1.7" />
+                </RoundRectangle>
+            </PartDraw>
+        </Group>
+
+        <!-- Native Fallback & Lock-Screen Visibility Layer (Underneath Slots 1..5) -->
+        <BooleanConfiguration id="lock_info_visible">
+            <!-- TRUE (Default): Keep Live Fallback Info Visible Even When Watch Is Locked! -->
+            <BooleanOption id="TRUE">
+                <Group name="fallbacks_lock_visible_grp" x="0" y="0" width="450" height="450">
+                    <!-- Slot 1 Native Weather Icon + Temp -->
+                    <Group name="fb1_wx_icon" x="36" y="162" width="40" height="40" alpha="255">
+                        <Variant mode="AMBIENT" target="alpha" value="0" />
+                        <Condition>
+                            <Expressions>
+                                <Expression name="ic_sunny"><![CDATA[[WEATHER.IS_AVAILABLE] == 1 && ([WEATHER.CONDITION] == 8 || ([WEATHER.CONDITION] == 1 && [WEATHER.IS_DAY] == 1))]]></Expression>
+                                <Expression name="ic_clear_night"><![CDATA[[WEATHER.IS_AVAILABLE] == 1 && [WEATHER.CONDITION] == 1 && [WEATHER.IS_DAY] == 0]]></Expression>
+                                <Expression name="ic_partly_day"><![CDATA[[WEATHER.IS_AVAILABLE] == 1 && [WEATHER.CONDITION] == 14 && [WEATHER.IS_DAY] == 1]]></Expression>
+                                <Expression name="ic_partly_night"><![CDATA[([WEATHER.IS_AVAILABLE] == 1 && [WEATHER.CONDITION] == 14 && [WEATHER.IS_DAY] == 0) || ([WEATHER.IS_AVAILABLE] == 0 && ([HOUR_0_23] < 6 || [HOUR_0_23] >= 19))]]></Expression>
+                                <Expression name="ic_windy"><![CDATA[[WEATHER.IS_AVAILABLE] == 1 && [WEATHER.CONDITION] == 15]]></Expression>
+                                <Expression name="ic_storm"><![CDATA[[WEATHER.IS_AVAILABLE] == 1 && [WEATHER.CONDITION] == 9]]></Expression>
+                                <Expression name="ic_rain"><![CDATA[[WEATHER.IS_AVAILABLE] == 1 && ([WEATHER.CONDITION] == 4 || [WEATHER.CONDITION] == 6 || [WEATHER.CONDITION] == 12)]]></Expression>
+                                <Expression name="ic_snow"><![CDATA[[WEATHER.IS_AVAILABLE] == 1 && ([WEATHER.CONDITION] == 5 || [WEATHER.CONDITION] == 7 || [WEATHER.CONDITION] == 10 || [WEATHER.CONDITION] == 11)]]></Expression>
+                                <Expression name="ic_fog"><![CDATA[[WEATHER.IS_AVAILABLE] == 1 && ([WEATHER.CONDITION] == 3 || [WEATHER.CONDITION] == 13)]]></Expression>
+                                <Expression name="ic_cloudy"><![CDATA[[WEATHER.IS_AVAILABLE] == 1 && [WEATHER.CONDITION] == 2]]></Expression>
+                            </Expressions>
+                            <Compare expression="ic_sunny"><PartImage x="0" y="0" width="40" height="40"><Image resource="wx_sunny" /></PartImage></Compare>
+                            <Compare expression="ic_clear_night"><PartImage x="0" y="0" width="40" height="40"><Image resource="wx_clear_night" /></PartImage></Compare>
+                            <Compare expression="ic_partly_day"><PartImage x="0" y="0" width="40" height="40"><Image resource="wx_partly_day" /></PartImage></Compare>
+                            <Compare expression="ic_partly_night"><PartImage x="0" y="0" width="40" height="40"><Image resource="wx_partly_night" /></PartImage></Compare>
+                            <Compare expression="ic_windy"><PartImage x="0" y="0" width="40" height="40"><Image resource="wx_windy" /></PartImage></Compare>
+                            <Compare expression="ic_storm"><PartImage x="0" y="0" width="40" height="40"><Image resource="wx_storm" /></PartImage></Compare>
+                            <Compare expression="ic_rain"><PartImage x="0" y="0" width="40" height="40"><Image resource="wx_rain" /></PartImage></Compare>
+                            <Compare expression="ic_snow"><PartImage x="0" y="0" width="40" height="40"><Image resource="wx_snow" /></PartImage></Compare>
+                            <Compare expression="ic_fog"><PartImage x="0" y="0" width="40" height="40"><Image resource="wx_fog" /></PartImage></Compare>
+                            <Compare expression="ic_cloudy"><PartImage x="0" y="0" width="40" height="40"><Image resource="wx_cloudy" /></PartImage></Compare>
+                            <Default><PartImage x="0" y="0" width="40" height="40"><Image resource="wx_partly_day" /></PartImage></Default>
+                        </Condition>
+                    </Group>
+                    <Group name="fb1_wx_temp" x="28" y="146" width="114" height="72" alpha="255">
+                        <Variant mode="AMBIENT" target="alpha" value="185" />
+                        <Condition>
+                            <Expressions>
+                                <Expression name="fb_wx_ok"><![CDATA[[WEATHER.IS_AVAILABLE] == 1]]></Expression>
+                            </Expressions>
+                            <Compare expression="fb_wx_ok">
+                                <PartText x="50" y="16" width="54" height="40">
+                                    <Variant mode="AMBIENT" target="x" value="22" />
+                                    <Variant mode="AMBIENT" target="width" value="70" />
+                                    <Text align="CENTER" maxLines="1" isAutoSize="TRUE">
+                                        <Font family="SYNC_TO_DEVICE" size="25" weight="EXTRA_BOLD" color="#FFFFFFFF">
+                                            <Template>%s°<Parameter expression="numberFormat(&quot;#&quot;, [WEATHER.TEMPERATURE])" /></Template>
+                                        </Font>
+                                    </Text>
+                                </PartText>
+                            </Compare>
+                            <Default>
+                                <PartText x="50" y="18" width="54" height="36">
+                                    <Variant mode="AMBIENT" target="alpha" value="0" />
+                                    <Text align="CENTER" maxLines="1" isAutoSize="TRUE">
+                                        <Font family="SYNC_TO_DEVICE" size="22" weight="EXTRA_BOLD" color="#FFFFFFFF">--°</Font>
+                                    </Text>
+                                </PartText>
+                            </Default>
+                        </Condition>
+                    </Group>
+
+                    <!-- Slot 2 Native UV Sun Heat -->
+                    <Group name="fb2_uv_grp" x="308" y="146" width="114" height="72" alpha="255">
+                        <Variant mode="AMBIENT" target="alpha" value="0" />
+                        <PartImage x="12" y="11" width="30" height="30"><Image resource="ic_uv_sun" /></PartImage>
+                        <Condition>
+                            <Expressions>
+                                <Expression name="uv_c_ok"><![CDATA[[WEATHER.IS_AVAILABLE] == 1 && [WEATHER.UV_INDEX] >= 0]]></Expression>
+                                <Expression name="uv_h_ok"><![CDATA[[WEATHER.IS_AVAILABLE] == 1 && [WEATHER.HOURS.0.UV_INDEX] >= 0]]></Expression>
+                                <Expression name="uv_d_ok"><![CDATA[[WEATHER.IS_AVAILABLE] == 1 && [WEATHER.DAYS.0.UV_INDEX] >= 0]]></Expression>
+                            </Expressions>
+                            <Compare expression="uv_c_ok">
+                                <PartText x="44" y="8" width="58" height="36">
+                                    <Text align="CENTER" maxLines="1" isAutoSize="TRUE">
+                                        <Font family="SYNC_TO_DEVICE" size="22" weight="EXTRA_BOLD" color="#FFFFD54F">
+                                            <Template>UV %s<Parameter expression="numberFormat(&quot;#&quot;, [WEATHER.UV_INDEX])" /></Template>
+                                        </Font>
+                                    </Text>
+                                </PartText>
+                                <PartDraw x="14" y="51" width="86" height="7">
+                                    <RoundRectangle x="0" y="0" width="86" height="7" cornerRadiusX="3.5" cornerRadiusY="3.5"><Fill color="#38FFFFFF" /></RoundRectangle>
+                                </PartDraw>
+                                <PartDraw x="14" y="51" width="86" height="7">
+                                    <RoundRectangle x="0" y="0" width="86" height="7" cornerRadiusX="3.5" cornerRadiusY="3.5">
+                                        <Transform target="width" value="clamp([WEATHER.UV_INDEX] / 11.0, 0.14, 1.0) * 86.0" />
+                                        <Fill color="#FFFFB300" />
+                                    </RoundRectangle>
+                                </PartDraw>
+                            </Compare>
+                            <Compare expression="uv_h_ok">
+                                <PartText x="44" y="8" width="58" height="36">
+                                    <Text align="CENTER" maxLines="1" isAutoSize="TRUE">
+                                        <Font family="SYNC_TO_DEVICE" size="22" weight="EXTRA_BOLD" color="#FFFFD54F">
+                                            <Template>UV %s<Parameter expression="numberFormat(&quot;#&quot;, [WEATHER.HOURS.0.UV_INDEX])" /></Template>
+                                        </Font>
+                                    </Text>
+                                </PartText>
+                                <PartDraw x="14" y="51" width="86" height="7">
+                                    <RoundRectangle x="0" y="0" width="86" height="7" cornerRadiusX="3.5" cornerRadiusY="3.5"><Fill color="#38FFFFFF" /></RoundRectangle>
+                                </PartDraw>
+                                <PartDraw x="14" y="51" width="86" height="7">
+                                    <RoundRectangle x="0" y="0" width="86" height="7" cornerRadiusX="3.5" cornerRadiusY="3.5">
+                                        <Transform target="width" value="clamp([WEATHER.HOURS.0.UV_INDEX] / 11.0, 0.14, 1.0) * 86.0" />
+                                        <Fill color="#FFFFB300" />
+                                    </RoundRectangle>
+                                </PartDraw>
+                            </Compare>
+                            <Compare expression="uv_d_ok">
+                                <PartText x="44" y="8" width="58" height="36">
+                                    <Text align="CENTER" maxLines="1" isAutoSize="TRUE">
+                                        <Font family="SYNC_TO_DEVICE" size="22" weight="EXTRA_BOLD" color="#FFFFD54F">
+                                            <Template>UV %s<Parameter expression="numberFormat(&quot;#&quot;, [WEATHER.DAYS.0.UV_INDEX])" /></Template>
+                                        </Font>
+                                    </Text>
+                                </PartText>
+                                <PartDraw x="14" y="51" width="86" height="7">
+                                    <RoundRectangle x="0" y="0" width="86" height="7" cornerRadiusX="3.5" cornerRadiusY="3.5"><Fill color="#38FFFFFF" /></RoundRectangle>
+                                </PartDraw>
+                                <PartDraw x="14" y="51" width="86" height="7">
+                                    <RoundRectangle x="0" y="0" width="86" height="7" cornerRadiusX="3.5" cornerRadiusY="3.5">
+                                        <Transform target="width" value="clamp([WEATHER.DAYS.0.UV_INDEX] / 11.0, 0.14, 1.0) * 86.0" />
+                                        <Fill color="#FFFFB300" />
+                                    </RoundRectangle>
+                                </PartDraw>
+                            </Compare>
+                            <Default>
+                                <PartText x="44" y="8" width="58" height="36">
+                                    <Text align="CENTER" maxLines="1" isAutoSize="TRUE">
+                                        <Font family="SYNC_TO_DEVICE" size="22" weight="EXTRA_BOLD" color="#FFFFD54F">UV --</Font>
+                                    </Text>
+                                </PartText>
+                                <PartDraw x="14" y="51" width="86" height="7">
+                                    <RoundRectangle x="0" y="0" width="86" height="7" cornerRadiusX="3.5" cornerRadiusY="3.5"><Fill color="#38FFFFFF" /></RoundRectangle>
+                                </PartDraw>
+                            </Default>
+                        </Condition>
+                    </Group>
+
+                    <!-- Slot 3 Native Heart Rate Fallback -->
+                    <Group name="fb3_hr_grp" x="28" y="232" width="114" height="72" alpha="255">
+                        <Variant mode="AMBIENT" target="alpha" value="0" />
+                        <PartImage x="12" y="11" width="30" height="30"><Image resource="ic_heart" /></PartImage>
+                        <Condition>
+                            <Expressions>
+                                <Expression name="fb_hr_ready"><![CDATA[[HEART_RATE] > 0]]></Expression>
+                            </Expressions>
+                            <Compare expression="fb_hr_ready">
+                                <PartText x="44" y="8" width="58" height="36">
+                                    <Text align="CENTER" maxLines="1" isAutoSize="TRUE">
+                                        <Font family="SYNC_TO_DEVICE" size="24" weight="EXTRA_BOLD" color="#FFFF8A80">
+                                            <Template>%d<Parameter expression="[HEART_RATE]" /></Template>
+                                        </Font>
+                                    </Text>
+                                </PartText>
+                                <PartDraw x="14" y="51" width="86" height="7">
+                                    <RoundRectangle x="0" y="0" width="86" height="7" cornerRadiusX="3.5" cornerRadiusY="3.5"><Fill color="#38FFFFFF" /></RoundRectangle>
+                                </PartDraw>
+                                <PartDraw x="14" y="51" width="86" height="7">
+                                    <RoundRectangle x="0" y="0" width="86" height="7" cornerRadiusX="3.5" cornerRadiusY="3.5">
+                                        <Transform target="width" value="clamp(([HEART_RATE] - 45.0) / 135.0, 0.14, 1.0) * 86.0" />
+                                        <Fill color="#FFFF5252" />
+                                    </RoundRectangle>
+                                </PartDraw>
+                            </Compare>
+                            <Default>
+                                <PartText x="44" y="8" width="58" height="36">
+                                    <Text align="CENTER" maxLines="1" isAutoSize="TRUE">
+                                        <Font family="SYNC_TO_DEVICE" size="22" weight="EXTRA_BOLD" color="#FFFF8A80">--</Font>
+                                    </Text>
+                                </PartText>
+                                <PartDraw x="14" y="51" width="86" height="7">
+                                    <RoundRectangle x="0" y="0" width="86" height="7" cornerRadiusX="3.5" cornerRadiusY="3.5"><Fill color="#38FFFFFF" /></RoundRectangle>
+                                </PartDraw>
+                            </Default>
+                        </Condition>
+                    </Group>
+
+                    <!-- Slot 4 Native Watch Battery Fallback (100% Live Even When Watch Is PIN-Locked!) -->
+                    <Group name="fb4_batt_grp" x="308" y="232" width="114" height="72" alpha="255">
+                        <Variant mode="AMBIENT" target="alpha" value="185" />
+                        <PartImage x="12" y="11" width="30" height="30">
+                            <Variant mode="AMBIENT" target="alpha" value="0" />
+                            <Image resource="ic_battery" />
+                        </PartImage>
+                        <Condition>
+                            <Expressions>
+                                <Expression name="fb_batt_low"><![CDATA[[BATTERY_IS_LOW] == 1 || [BATTERY_PERCENT] <= 25]]></Expression>
+                            </Expressions>
+                            <Compare expression="fb_batt_low">
+                                <PartText x="42" y="8" width="60" height="36">
+                                    <Variant mode="AMBIENT" target="x" value="22" />
+                                    <Variant mode="AMBIENT" target="width" value="70" />
+                                    <Text align="CENTER" maxLines="1" isAutoSize="TRUE">
+                                        <Font family="SYNC_TO_DEVICE" size="23" weight="EXTRA_BOLD" color="#FFFF6E40">
+                                            <Template>%d%%<Parameter expression="[BATTERY_PERCENT]" /></Template>
+                                        </Font>
+                                    </Text>
+                                </PartText>
+                                <PartDraw x="14" y="51" width="86" height="7">
+                                    <Variant mode="AMBIENT" target="alpha" value="0" />
+                                    <RoundRectangle x="0" y="0" width="86" height="7" cornerRadiusX="3.5" cornerRadiusY="3.5"><Fill color="#38FFFFFF" /></RoundRectangle>
+                                </PartDraw>
+                                <PartDraw x="14" y="51" width="86" height="7">
+                                    <Variant mode="AMBIENT" target="alpha" value="0" />
+                                    <RoundRectangle x="0" y="0" width="86" height="7" cornerRadiusX="3.5" cornerRadiusY="3.5">
+                                        <Transform target="width" value="clamp([BATTERY_PERCENT] / 100.0, 0.12, 1.0) * 86.0" />
+                                        <Fill color="#FFFF6E40" />
+                                    </RoundRectangle>
+                                </PartDraw>
+                            </Compare>
+                            <Default>
+                                <PartText x="42" y="8" width="60" height="36">
+                                    <Variant mode="AMBIENT" target="x" value="22" />
+                                    <Variant mode="AMBIENT" target="width" value="70" />
+                                    <Text align="CENTER" maxLines="1" isAutoSize="TRUE">
+                                        <Font family="SYNC_TO_DEVICE" size="23" weight="EXTRA_BOLD" color="#FF69F0AE">
+                                            <Template>%d%%<Parameter expression="[BATTERY_PERCENT]" /></Template>
+                                        </Font>
+                                    </Text>
+                                </PartText>
+                                <PartDraw x="14" y="51" width="86" height="7">
+                                    <Variant mode="AMBIENT" target="alpha" value="0" />
+                                    <RoundRectangle x="0" y="0" width="86" height="7" cornerRadiusX="3.5" cornerRadiusY="3.5"><Fill color="#38FFFFFF" /></RoundRectangle>
+                                </PartDraw>
+                                <PartDraw x="14" y="51" width="86" height="7">
+                                    <Variant mode="AMBIENT" target="alpha" value="0" />
+                                    <RoundRectangle x="0" y="0" width="86" height="7" cornerRadiusX="3.5" cornerRadiusY="3.5">
+                                        <Transform target="width" value="clamp([BATTERY_PERCENT] / 100.0, 0.12, 1.0) * 86.0" />
+                                        <Fill color="#FF69F0AE" />
+                                    </RoundRectangle>
+                                </PartDraw>
+                            </Default>
+                        </Condition>
+                    </Group>
+
+                    <!-- Slot 5 Native Steps / Energy Fallback + Curved Bottom Arc -->
+                    <Group name="fb5_energy_grp" x="105" y="314" width="240" height="118" alpha="255">
+                        <Variant mode="AMBIENT" target="alpha" value="185" />
+                        <PartImage x="43" y="12" width="32" height="32">
+                            <Variant mode="AMBIENT" target="alpha" value="0" />
+                            <Image resource="ic_energy" />
+                        </PartImage>
+                        <Condition>
+                            <Expressions>
+                                <Expression name="fb_steps_ok"><![CDATA[[STEP_COUNT] > 0]]></Expression>
+                            </Expressions>
+                            <Compare expression="fb_steps_ok">
+                                <PartText x="78" y="8" width="122" height="40">
+                                    <Variant mode="AMBIENT" target="x" value="54" />
+                                    <Text align="CENTER" maxLines="1" isAutoSize="TRUE">
+                                        <Font family="SYNC_TO_DEVICE" size="25" weight="EXTRA_BOLD" color="#FFFFFFFF">
+                                            <Template>%s<Parameter expression="numberFormat(&quot;#,###&quot;, [STEP_COUNT])" /></Template>
+                                        </Font>
+                                    </Text>
+                                </PartText>
+                                <PartDraw x="0" y="0" width="240" height="118">
+                                    <Variant mode="AMBIENT" target="alpha" value="0" />
+                                    <Arc centerX="120" centerY="-89" width="372" height="372" startAngle="205" endAngle="155" direction="COUNTER_CLOCKWISE">
+                                        <Stroke color="#40FFFFFF" thickness="7" cap="ROUND" />
+                                    </Arc>
+                                </PartDraw>
+                                <PartDraw x="0" y="0" width="240" height="118">
+                                    <Variant mode="AMBIENT" target="alpha" value="0" />
+                                    <Arc centerX="120" centerY="-89" width="372" height="372" startAngle="205" endAngle="155" direction="COUNTER_CLOCKWISE">
+                                        <Transform target="endAngle" value="205.0 - 50.0 * clamp([STEP_PERCENT] / 100.0, 0.06, 1.0)" />
+                                        <Stroke color="[CONFIGURATION.color_theme.1]" thickness="7" cap="ROUND" />
+                                    </Arc>
+                                </PartDraw>
+                            </Compare>
+                            <Default>
+                                <PartText x="78" y="10" width="122" height="36">
+                                    <Variant mode="AMBIENT" target="alpha" value="0" />
+                                    <Text align="CENTER" maxLines="1" isAutoSize="TRUE">
+                                        <Font family="SYNC_TO_DEVICE" size="21" weight="EXTRA_BOLD" color="[CONFIGURATION.color_theme.1]">--</Font>
+                                    </Text>
+                                </PartText>
+                                <PartDraw x="0" y="0" width="240" height="118">
+                                    <Variant mode="AMBIENT" target="alpha" value="0" />
+                                    <Arc centerX="120" centerY="-89" width="372" height="372" startAngle="205" endAngle="155" direction="COUNTER_CLOCKWISE">
+                                        <Stroke color="#40FFFFFF" thickness="7" cap="ROUND" />
+                                    </Arc>
+                                </PartDraw>
+                            </Default>
+                        </Condition>
+                    </Group>
+                </Group>
+            </BooleanOption>
+
+            <!-- FALSE: Hide Personal/Battery Values When Watch Is Locked (Still Shows Weather/UV When Unlocked!) -->
+            <BooleanOption id="FALSE">
+                <Group name="fallbacks_lock_private_grp" x="0" y="0" width="450" height="450">
+                    <!-- When unlocked ([WEATHER.IS_AVAILABLE] == 1), Slots 1 & 2 still display native Weather & UV; when locked (0), values stay hidden! -->
+                    <Condition>
+                        <Expressions>
+                            <Expression name="unlocked_wx_live"><![CDATA[[WEATHER.IS_AVAILABLE] == 1]]></Expression>
+                        </Expressions>
+                        <Compare expression="unlocked_wx_live">
+                            <Group name="priv_unlocked_wx" x="0" y="0" width="450" height="450">
+                                <PartImage x="36" y="162" width="40" height="40">
+                                    <Variant mode="AMBIENT" target="alpha" value="0" />
+                                    <Image resource="wx_partly_day" />
+                                </PartImage>
+                                <PartText x="78" y="162" width="54" height="40">
+                                    <Variant mode="AMBIENT" target="alpha" value="185" />
+                                    <Text align="CENTER" maxLines="1" isAutoSize="TRUE">
+                                        <Font family="SYNC_TO_DEVICE" size="25" weight="EXTRA_BOLD" color="#FFFFFFFF">
+                                            <Template>%s°<Parameter expression="numberFormat(&quot;#&quot;, [WEATHER.TEMPERATURE])" /></Template>
+                                        </Font>
+                                    </Text>
+                                </PartText>
+                                <PartImage x="320" y="157" width="30" height="30">
+                                    <Variant mode="AMBIENT" target="alpha" value="0" />
+                                    <Image resource="ic_uv_sun" />
+                                </PartImage>
+                                <PartText x="352" y="154" width="58" height="36">
+                                    <Variant mode="AMBIENT" target="alpha" value="0" />
+                                    <Text align="CENTER" maxLines="1" isAutoSize="TRUE">
+                                        <Font family="SYNC_TO_DEVICE" size="22" weight="EXTRA_BOLD" color="#FFFFD54F">
+                                            <Template>UV %s<Parameter expression="numberFormat(&quot;#&quot;, [WEATHER.UV_INDEX])" /></Template>
+                                        </Font>
+                                    </Text>
+                                </PartText>
+                            </Group>
+                        </Compare>
+                        <Default>
+                            <!-- Locked Privacy State: Clean Centered Icons Only, Zero Numbers! -->
+                            <Group name="priv_locked_icons_only" x="0" y="0" width="450" height="450" alpha="130">
+                                <Variant mode="AMBIENT" target="alpha" value="0" />
+                                <PartImage x="67" y="164" width="36" height="36"><Image resource="wx_partly_day" /></PartImage>
+                                <PartImage x="349" y="166" width="32" height="32"><Image resource="ic_uv_sun" /></PartImage>
+                                <PartImage x="69" y="252" width="32" height="32"><Image resource="ic_heart" /></PartImage>
+                                <PartImage x="349" y="252" width="32" height="32"><Image resource="ic_battery" /></PartImage>
+                                <PartImage x="209" y="326" width="32" height="32"><Image resource="ic_energy" /></PartImage>
+                            </Group>
+                        </Default>
+                    </Condition>
+                </Group>
+            </BooleanOption>
+        </BooleanConfiguration>
+
+        <!-- ================================================================== -->
+        <!-- 6. FIVE UNIVERSAL SAMSUNG COMPLICATION SLOTS                       -->
+        <!--    Every custom complication from Phone or Watch renders its own   -->
+        <!--    icon, title, text & gauge cleanly over the capsule!             -->
+        <!-- ================================================================== -->
+
+        <!-- SLOT 1: WEATHER / CUSTOM UPPER-LEFT (x=28, y=146, w=114, h=72, r=26) -->
+        <ComplicationSlot
+            slotId="1"
+            name="weather_slot"
+            displayName="slot_weather_label"
+            x="28"
+            y="146"
+            width="114"
+            height="72"
+            supportedTypes="SHORT_TEXT RANGED_VALUE MONOCHROMATIC_IMAGE SMALL_IMAGE EMPTY"
+            isCustomizable="TRUE">
+            <Variant mode="AMBIENT" target="alpha" value="185" />
+            <DefaultProviderPolicy
+                defaultSystemProvider="EMPTY"
+                defaultSystemProviderType="EMPTY" />
+            <BoundingRoundBox x="0" y="0" width="114" height="72" cornerRadius="26" />
+
+            <Complication type="SHORT_TEXT">
+                <PartDraw x="4" y="4" width="106" height="64" alpha="255">
+                    <Variant mode="AMBIENT" target="alpha" value="0" />
+                    <RoundRectangle x="0" y="0" width="106" height="64" cornerRadiusX="22" cornerRadiusY="22">
+                        <Fill color="[CONFIGURATION.color_theme.2]" />
+                    </RoundRectangle>
+                </PartDraw>
+                <PartDraw x="12" y="10" width="90" height="52" alpha="0">
+                    <Variant mode="AMBIENT" target="alpha" value="255" />
+                    <RoundRectangle x="0" y="0" width="90" height="52" cornerRadiusX="18" cornerRadiusY="18">
+                        <Fill color="#FF000000" />
+                    </RoundRectangle>
+                </PartDraw>
+                <Condition>
+                    <Expressions>
+                        <Expression name="s1_has_mono"><![CDATA[[COMPLICATION.MONOCHROMATIC_IMAGE] != null]]></Expression>
+                        <Expression name="s1_has_simg"><![CDATA[[COMPLICATION.SMALL_IMAGE] != null]]></Expression>
+                    </Expressions>
+                    <Compare expression="s1_has_mono">
+                        <PartImage x="12" y="21" width="28" height="30" tintColor="#FFFFFFFF">
+                            <Variant mode="AMBIENT" target="alpha" value="0" />
+                            <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
+                        </PartImage>
+                        <PartText x="42" y="12" width="60" height="48">
+                            <Variant mode="AMBIENT" target="x" value="16" />
+                            <Variant mode="AMBIENT" target="width" value="82" />
+                            <Text align="CENTER" maxLines="2" isAutoSize="TRUE">
+                                <Font family="SYNC_TO_DEVICE" size="23" weight="EXTRA_BOLD" color="#FFFFFFFF">
+                                    <Template>%s<Parameter expression="[COMPLICATION.TEXT] != &quot;&quot; &amp;&amp; [COMPLICATION.TEXT] != &quot;/EMPTY/&quot; ? [COMPLICATION.TEXT] : [COMPLICATION.TITLE]" /></Template>
+                                </Font>
+                            </Text>
+                        </PartText>
+                    </Compare>
+                    <Compare expression="s1_has_simg">
+                        <PartImage x="12" y="21" width="28" height="30">
+                            <Variant mode="AMBIENT" target="alpha" value="0" />
+                            <Image resource="[COMPLICATION.SMALL_IMAGE]" />
+                        </PartImage>
+                        <PartText x="42" y="12" width="60" height="48">
+                            <Variant mode="AMBIENT" target="x" value="16" />
+                            <Variant mode="AMBIENT" target="width" value="82" />
+                            <Text align="CENTER" maxLines="2" isAutoSize="TRUE">
+                                <Font family="SYNC_TO_DEVICE" size="23" weight="EXTRA_BOLD" color="#FFFFFFFF">
+                                    <Template>%s<Parameter expression="[COMPLICATION.TEXT] != &quot;&quot; &amp;&amp; [COMPLICATION.TEXT] != &quot;/EMPTY/&quot; ? [COMPLICATION.TEXT] : [COMPLICATION.TITLE]" /></Template>
+                                </Font>
+                            </Text>
+                        </PartText>
+                    </Compare>
+                    <Default>
+                        <PartText x="14" y="12" width="86" height="48">
+                            <Text align="CENTER" maxLines="2" isAutoSize="TRUE">
+                                <Font family="SYNC_TO_DEVICE" size="23" weight="EXTRA_BOLD" color="#FFFFFFFF">
+                                    <Template>%s<Parameter expression="[COMPLICATION.TEXT] != &quot;&quot; &amp;&amp; [COMPLICATION.TEXT] != &quot;/EMPTY/&quot; ? [COMPLICATION.TEXT] : [COMPLICATION.TITLE]" /></Template>
+                                </Font>
+                            </Text>
+                        </PartText>
+                    </Default>
+                </Condition>
+            </Complication>
+
+            <Complication type="RANGED_VALUE">
+                <PartDraw x="4" y="4" width="106" height="64" alpha="255">
+                    <Variant mode="AMBIENT" target="alpha" value="0" />
+                    <RoundRectangle x="0" y="0" width="106" height="64" cornerRadiusX="22" cornerRadiusY="22">
+                        <Fill color="[CONFIGURATION.color_theme.2]" />
+                    </RoundRectangle>
+                </PartDraw>
+                <PartDraw x="12" y="10" width="90" height="52" alpha="0">
+                    <Variant mode="AMBIENT" target="alpha" value="255" />
+                    <RoundRectangle x="0" y="0" width="90" height="52" cornerRadiusX="18" cornerRadiusY="18">
+                        <Fill color="#FF000000" />
+                    </RoundRectangle>
+                </PartDraw>
+                <PartImage x="12" y="12" width="28" height="28" tintColor="#FFFFFFFF">
+                    <Variant mode="AMBIENT" target="alpha" value="0" />
+                    <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
+                </PartImage>
+                <PartText x="42" y="9" width="60" height="34">
+                    <Variant mode="AMBIENT" target="x" value="16" />
+                    <Variant mode="AMBIENT" target="width" value="82" />
+                    <Text align="CENTER" maxLines="1" isAutoSize="TRUE">
+                        <Font family="SYNC_TO_DEVICE" size="23" weight="EXTRA_BOLD" color="#FFFFFFFF">
+                            <Template>%s<Parameter expression="[COMPLICATION.TEXT] != &quot;&quot; &amp;&amp; [COMPLICATION.TEXT] != &quot;/EMPTY/&quot; ? [COMPLICATION.TEXT] : [COMPLICATION.TITLE]" /></Template>
+                        </Font>
+                    </Text>
+                </PartText>
+                <PartDraw x="14" y="51" width="86" height="7">
+                    <Variant mode="AMBIENT" target="alpha" value="0" />
+                    <RoundRectangle x="0" y="0" width="86" height="7" cornerRadiusX="3.5" cornerRadiusY="3.5"><Fill color="#38FFFFFF" /></RoundRectangle>
+                </PartDraw>
+                <PartDraw x="14" y="51" width="86" height="7">
+                    <Variant mode="AMBIENT" target="alpha" value="0" />
+                    <RoundRectangle x="0" y="0" width="86" height="7" cornerRadiusX="3.5" cornerRadiusY="3.5">
+                        <Transform target="width" value="clamp(([COMPLICATION.RANGED_VALUE_VALUE] - [COMPLICATION.RANGED_VALUE_MIN]) / ([COMPLICATION.RANGED_VALUE_MAX] - [COMPLICATION.RANGED_VALUE_MIN]), 0.12, 1.0) * 86.0" />
+                        <Fill color="[CONFIGURATION.color_theme.1]" />
+                    </RoundRectangle>
+                </PartDraw>
+            </Complication>
+
+            <Complication type="MONOCHROMATIC_IMAGE">
+                <PartDraw x="4" y="4" width="106" height="64" alpha="255">
+                    <Variant mode="AMBIENT" target="alpha" value="0" />
+                    <RoundRectangle x="0" y="0" width="106" height="64" cornerRadiusX="22" cornerRadiusY="22">
+                        <Fill color="[CONFIGURATION.color_theme.2]" />
+                    </RoundRectangle>
+                </PartDraw>
+                <PartImage x="37" y="16" width="40" height="40" tintColor="#FFFFFFFF">
+                    <Variant mode="AMBIENT" target="alpha" value="0" />
+                    <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
+                </PartImage>
+            </Complication>
+
+            <Complication type="SMALL_IMAGE">
+                <PartDraw x="4" y="4" width="106" height="64" alpha="255">
+                    <Variant mode="AMBIENT" target="alpha" value="0" />
+                    <RoundRectangle x="0" y="0" width="106" height="64" cornerRadiusX="22" cornerRadiusY="22">
+                        <Fill color="[CONFIGURATION.color_theme.2]" />
+                    </RoundRectangle>
+                </PartDraw>
+                <PartImage x="36" y="15" width="42" height="42">
+                    <Variant mode="AMBIENT" target="alpha" value="0" />
+                    <Image resource="[COMPLICATION.SMALL_IMAGE]" />
+                </PartImage>
+            </Complication>
+
+            <Complication type="EMPTY">
+                <Group name="empty_slot_1" x="0" y="0" width="1" height="1" alpha="0" />
+            </Complication>
+        </ComplicationSlot>
+
+        <!-- SLOT 2: SUN HEAT / UV INDEX / CUSTOM UPPER-RIGHT (x=308, y=146, w=114, h=72, r=26) -->
+        <ComplicationSlot
+            slotId="2"
+            name="uv_sun_heat_slot"
+            displayName="slot_uv_label"
+            x="308"
+            y="146"
+            width="114"
+            height="72"
+            supportedTypes="RANGED_VALUE SHORT_TEXT MONOCHROMATIC_IMAGE SMALL_IMAGE EMPTY"
+            isCustomizable="TRUE">
+            <Variant mode="AMBIENT" target="alpha" value="0" />
+            <DefaultProviderPolicy
+                defaultSystemProvider="EMPTY"
+                defaultSystemProviderType="EMPTY" />
+            <BoundingRoundBox x="0" y="0" width="114" height="72" cornerRadius="26" />
+
+            <Complication type="RANGED_VALUE">
+                <PartDraw x="4" y="4" width="106" height="64" alpha="255">
+                    <RoundRectangle x="0" y="0" width="106" height="64" cornerRadiusX="22" cornerRadiusY="22">
+                        <Fill color="[CONFIGURATION.color_theme.2]" />
+                    </RoundRectangle>
+                </PartDraw>
+                <Condition>
+                    <Expressions>
+                        <Expression name="s2_rv_mono"><![CDATA[[COMPLICATION.MONOCHROMATIC_IMAGE] != null]]></Expression>
+                    </Expressions>
+                    <Compare expression="s2_rv_mono">
+                        <PartImage x="12" y="12" width="28" height="28" tintColor="#FFFFD54F">
+                            <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
+                        </PartImage>
+                        <PartText x="42" y="9" width="60" height="34">
+                            <Text align="CENTER" maxLines="1" isAutoSize="TRUE">
+                                <Font family="SYNC_TO_DEVICE" size="23" weight="EXTRA_BOLD" color="#FFFFD54F">
+                                    <Template>%s<Parameter expression="[COMPLICATION.TEXT] != &quot;&quot; &amp;&amp; [COMPLICATION.TEXT] != &quot;/EMPTY/&quot; ? [COMPLICATION.TEXT] : [COMPLICATION.TITLE]" /></Template>
+                                </Font>
+                            </Text>
+                        </PartText>
+                    </Compare>
+                    <Default>
+                        <PartImage x="12" y="12" width="28" height="28">
+                            <Image resource="ic_uv_sun" />
+                        </PartImage>
+                        <PartText x="42" y="9" width="60" height="34">
+                            <Text align="CENTER" maxLines="1" isAutoSize="TRUE">
+                                <Font family="SYNC_TO_DEVICE" size="23" weight="EXTRA_BOLD" color="#FFFFD54F">
+                                    <Template>%s<Parameter expression="[COMPLICATION.TEXT] != &quot;&quot; &amp;&amp; [COMPLICATION.TEXT] != &quot;/EMPTY/&quot; ? [COMPLICATION.TEXT] : [COMPLICATION.TITLE]" /></Template>
+                                </Font>
+                            </Text>
+                        </PartText>
+                    </Default>
+                </Condition>
+                <PartDraw x="14" y="51" width="86" height="7">
+                    <RoundRectangle x="0" y="0" width="86" height="7" cornerRadiusX="3.5" cornerRadiusY="3.5"><Fill color="#38FFFFFF" /></RoundRectangle>
+                </PartDraw>
+                <PartDraw x="14" y="51" width="86" height="7">
+                    <RoundRectangle x="0" y="0" width="86" height="7" cornerRadiusX="3.5" cornerRadiusY="3.5">
+                        <Transform target="width" value="clamp(([COMPLICATION.RANGED_VALUE_VALUE] - [COMPLICATION.RANGED_VALUE_MIN]) / ([COMPLICATION.RANGED_VALUE_MAX] - [COMPLICATION.RANGED_VALUE_MIN]), 0.12, 1.0) * 86.0" />
+                        <Fill color="#FFFFB300" />
+                    </RoundRectangle>
+                </PartDraw>
+            </Complication>
+
+            <Complication type="SHORT_TEXT">
+                <PartDraw x="4" y="4" width="106" height="64" alpha="255">
+                    <RoundRectangle x="0" y="0" width="106" height="64" cornerRadiusX="22" cornerRadiusY="22">
+                        <Fill color="[CONFIGURATION.color_theme.2]" />
+                    </RoundRectangle>
+                </PartDraw>
+                <Condition>
+                    <Expressions>
+                        <Expression name="s2_has_mono"><![CDATA[[COMPLICATION.MONOCHROMATIC_IMAGE] != null]]></Expression>
+                        <Expression name="s2_has_simg"><![CDATA[[COMPLICATION.SMALL_IMAGE] != null]]></Expression>
+                    </Expressions>
+                    <Compare expression="s2_has_mono">
+                        <PartImage x="12" y="21" width="28" height="30" tintColor="#FFFFD54F">
+                            <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
+                        </PartImage>
+                        <PartText x="42" y="12" width="60" height="48">
+                            <Text align="CENTER" maxLines="2" isAutoSize="TRUE">
+                                <Font family="SYNC_TO_DEVICE" size="22" weight="EXTRA_BOLD" color="#FFFFD54F">
+                                    <Template>%s<Parameter expression="[COMPLICATION.TEXT] != &quot;&quot; &amp;&amp; [COMPLICATION.TEXT] != &quot;/EMPTY/&quot; ? [COMPLICATION.TEXT] : [COMPLICATION.TITLE]" /></Template>
+                                </Font>
+                            </Text>
+                        </PartText>
+                    </Compare>
+                    <Compare expression="s2_has_simg">
+                        <PartImage x="12" y="21" width="28" height="30">
+                            <Image resource="[COMPLICATION.SMALL_IMAGE]" />
+                        </PartImage>
+                        <PartText x="42" y="12" width="60" height="48">
+                            <Text align="CENTER" maxLines="2" isAutoSize="TRUE">
+                                <Font family="SYNC_TO_DEVICE" size="22" weight="EXTRA_BOLD" color="#FFFFD54F">
+                                    <Template>%s<Parameter expression="[COMPLICATION.TEXT] != &quot;&quot; &amp;&amp; [COMPLICATION.TEXT] != &quot;/EMPTY/&quot; ? [COMPLICATION.TEXT] : [COMPLICATION.TITLE]" /></Template>
+                                </Font>
+                            </Text>
+                        </PartText>
+                    </Compare>
+                    <Default>
+                        <PartText x="14" y="12" width="86" height="48">
+                            <Text align="CENTER" maxLines="2" isAutoSize="TRUE">
+                                <Font family="SYNC_TO_DEVICE" size="22" weight="EXTRA_BOLD" color="#FFFFD54F">
+                                    <Template>%s<Parameter expression="[COMPLICATION.TEXT] != &quot;&quot; &amp;&amp; [COMPLICATION.TEXT] != &quot;/EMPTY/&quot; ? [COMPLICATION.TEXT] : [COMPLICATION.TITLE]" /></Template>
+                                </Font>
+                            </Text>
+                        </PartText>
+                    </Default>
+                </Condition>
+            </Complication>
+
+            <Complication type="MONOCHROMATIC_IMAGE">
+                <PartDraw x="4" y="4" width="106" height="64" alpha="255">
+                    <RoundRectangle x="0" y="0" width="106" height="64" cornerRadiusX="22" cornerRadiusY="22">
+                        <Fill color="[CONFIGURATION.color_theme.2]" />
+                    </RoundRectangle>
+                </PartDraw>
+                <PartImage x="37" y="16" width="40" height="40" tintColor="#FFFFD54F">
+                    <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
+                </PartImage>
+            </Complication>
+
+            <Complication type="SMALL_IMAGE">
+                <PartDraw x="4" y="4" width="106" height="64" alpha="255">
+                    <RoundRectangle x="0" y="0" width="106" height="64" cornerRadiusX="22" cornerRadiusY="22">
+                        <Fill color="[CONFIGURATION.color_theme.2]" />
+                    </RoundRectangle>
+                </PartDraw>
+                <PartImage x="36" y="15" width="42" height="42">
+                    <Image resource="[COMPLICATION.SMALL_IMAGE]" />
+                </PartImage>
+            </Complication>
+
+            <Complication type="EMPTY">
+                <Group name="empty_slot_2" x="0" y="0" width="1" height="1" alpha="0" />
+            </Complication>
+        </ComplicationSlot>
+
+        <!-- SLOT 3: HEART RATE / CUSTOM LOWER-LEFT (x=28, y=232, w=114, h=72, r=26) -->
+        <ComplicationSlot
+            slotId="3"
+            name="heart_rate_slot"
+            displayName="slot_hr_label"
+            x="28"
+            y="232"
+            width="114"
+            height="72"
+            supportedTypes="SHORT_TEXT RANGED_VALUE MONOCHROMATIC_IMAGE SMALL_IMAGE EMPTY"
+            isCustomizable="TRUE">
+            <Variant mode="AMBIENT" target="alpha" value="0" />
+            <DefaultProviderPolicy
+                defaultSystemProvider="HEART_RATE"
+                defaultSystemProviderType="SHORT_TEXT" />
+            <BoundingRoundBox x="0" y="0" width="114" height="72" cornerRadius="26" />
+
+            <Complication type="SHORT_TEXT">
+                <PartDraw x="4" y="4" width="106" height="64" alpha="255">
+                    <RoundRectangle x="0" y="0" width="106" height="64" cornerRadiusX="22" cornerRadiusY="22">
+                        <Fill color="[CONFIGURATION.color_theme.2]" />
+                    </RoundRectangle>
+                </PartDraw>
+                <Condition>
+                    <Expressions>
+                        <Expression name="s3_has_mono"><![CDATA[[COMPLICATION.MONOCHROMATIC_IMAGE] != null]]></Expression>
+                        <Expression name="s3_has_simg"><![CDATA[[COMPLICATION.SMALL_IMAGE] != null]]></Expression>
+                    </Expressions>
+                    <Compare expression="s3_has_mono">
+                        <PartImage x="12" y="12" width="28" height="28" tintColor="#FFFF8A80">
+                            <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
+                        </PartImage>
+                        <PartText x="42" y="9" width="60" height="36">
+                            <Text align="CENTER" maxLines="2" isAutoSize="TRUE">
+                                <Font family="SYNC_TO_DEVICE" size="24" weight="EXTRA_BOLD" color="#FFFF8A80">
+                                    <Template>%s<Parameter expression="[COMPLICATION.TEXT] != &quot;&quot; &amp;&amp; [COMPLICATION.TEXT] != &quot;/EMPTY/&quot; ? [COMPLICATION.TEXT] : [COMPLICATION.TITLE]" /></Template>
+                                </Font>
+                            </Text>
+                        </PartText>
+                    </Compare>
+                    <Compare expression="s3_has_simg">
+                        <PartImage x="12" y="12" width="28" height="28">
+                            <Image resource="[COMPLICATION.SMALL_IMAGE]" />
+                        </PartImage>
+                        <PartText x="42" y="9" width="60" height="36">
+                            <Text align="CENTER" maxLines="2" isAutoSize="TRUE">
+                                <Font family="SYNC_TO_DEVICE" size="24" weight="EXTRA_BOLD" color="#FFFF8A80">
+                                    <Template>%s<Parameter expression="[COMPLICATION.TEXT] != &quot;&quot; &amp;&amp; [COMPLICATION.TEXT] != &quot;/EMPTY/&quot; ? [COMPLICATION.TEXT] : [COMPLICATION.TITLE]" /></Template>
+                                </Font>
+                            </Text>
+                        </PartText>
+                    </Compare>
+                    <Default>
+                        <PartImage x="12" y="12" width="28" height="28">
+                            <Image resource="ic_heart" />
+                        </PartImage>
+                        <PartText x="42" y="9" width="60" height="36">
+                            <Text align="CENTER" maxLines="2" isAutoSize="TRUE">
+                                <Font family="SYNC_TO_DEVICE" size="24" weight="EXTRA_BOLD" color="#FFFF8A80">
+                                    <Template>%s<Parameter expression="[COMPLICATION.TEXT] != &quot;&quot; &amp;&amp; [COMPLICATION.TEXT] != &quot;/EMPTY/&quot; ? [COMPLICATION.TEXT] : [COMPLICATION.TITLE]" /></Template>
+                                </Font>
+                            </Text>
+                        </PartText>
+                    </Default>
+                </Condition>
+                <PartDraw x="14" y="51" width="86" height="7">
+                    <RoundRectangle x="0" y="0" width="86" height="7" cornerRadiusX="3.5" cornerRadiusY="3.5"><Fill color="#38FFFFFF" /></RoundRectangle>
+                </PartDraw>
+                <PartDraw x="14" y="51" width="86" height="7">
+                    <RoundRectangle x="0" y="0" width="86" height="7" cornerRadiusX="3.5" cornerRadiusY="3.5">
+                        <Transform target="width" value="clamp(([HEART_RATE] - 45.0) / 135.0, 0.14, 1.0) * 86.0" />
+                        <Fill color="#FFFF5252" />
+                    </RoundRectangle>
+                </PartDraw>
+            </Complication>
+
+            <Complication type="RANGED_VALUE">
+                <PartDraw x="4" y="4" width="106" height="64" alpha="255">
+                    <RoundRectangle x="0" y="0" width="106" height="64" cornerRadiusX="22" cornerRadiusY="22">
+                        <Fill color="[CONFIGURATION.color_theme.2]" />
+                    </RoundRectangle>
+                </PartDraw>
+                <PartImage x="12" y="12" width="28" height="28" tintColor="#FFFF8A80">
+                    <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
+                </PartImage>
+                <PartText x="42" y="9" width="60" height="34">
+                    <Text align="CENTER" maxLines="1" isAutoSize="TRUE">
+                        <Font family="SYNC_TO_DEVICE" size="24" weight="EXTRA_BOLD" color="#FFFF8A80">
+                            <Template>%s<Parameter expression="[COMPLICATION.TEXT] != &quot;&quot; &amp;&amp; [COMPLICATION.TEXT] != &quot;/EMPTY/&quot; ? [COMPLICATION.TEXT] : [COMPLICATION.TITLE]" /></Template>
+                        </Font>
+                    </Text>
+                </PartText>
+                <PartDraw x="14" y="51" width="86" height="7">
+                    <RoundRectangle x="0" y="0" width="86" height="7" cornerRadiusX="3.5" cornerRadiusY="3.5"><Fill color="#38FFFFFF" /></RoundRectangle>
+                </PartDraw>
+                <PartDraw x="14" y="51" width="86" height="7">
+                    <RoundRectangle x="0" y="0" width="86" height="7" cornerRadiusX="3.5" cornerRadiusY="3.5">
+                        <Transform target="width" value="clamp(([COMPLICATION.RANGED_VALUE_VALUE] - [COMPLICATION.RANGED_VALUE_MIN]) / ([COMPLICATION.RANGED_VALUE_MAX] - [COMPLICATION.RANGED_VALUE_MIN]), 0.14, 1.0) * 86.0" />
+                        <Fill color="#FFFF5252" />
+                    </RoundRectangle>
+                </PartDraw>
+            </Complication>
+
+            <Complication type="MONOCHROMATIC_IMAGE">
+                <PartDraw x="4" y="4" width="106" height="64" alpha="255">
+                    <RoundRectangle x="0" y="0" width="106" height="64" cornerRadiusX="22" cornerRadiusY="22">
+                        <Fill color="[CONFIGURATION.color_theme.2]" />
+                    </RoundRectangle>
+                </PartDraw>
+                <PartImage x="37" y="16" width="40" height="40" tintColor="#FFFF8A80">
+                    <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
+                </PartImage>
+            </Complication>
+
+            <Complication type="SMALL_IMAGE">
+                <PartDraw x="4" y="4" width="106" height="64" alpha="255">
+                    <RoundRectangle x="0" y="0" width="106" height="64" cornerRadiusX="22" cornerRadiusY="22">
+                        <Fill color="[CONFIGURATION.color_theme.2]" />
+                    </RoundRectangle>
+                </PartDraw>
+                <PartImage x="36" y="15" width="42" height="42">
+                    <Image resource="[COMPLICATION.SMALL_IMAGE]" />
+                </PartImage>
+            </Complication>
+
+            <Complication type="EMPTY">
+                <Group name="empty_slot_3" x="0" y="0" width="1" height="1" alpha="0" />
+            </Complication>
+        </ComplicationSlot>
+
+        <!-- SLOT 4: WATCH BATTERY / CUSTOM LOWER-RIGHT (x=308, y=232, w=114, h=72, r=26) -->
+        <ComplicationSlot
+            slotId="4"
+            name="watch_battery_slot"
+            displayName="slot_battery_label"
+            x="308"
+            y="232"
+            width="114"
+            height="72"
+            supportedTypes="RANGED_VALUE SHORT_TEXT MONOCHROMATIC_IMAGE SMALL_IMAGE EMPTY"
+            isCustomizable="TRUE">
+            <Variant mode="AMBIENT" target="alpha" value="185" />
+            <DefaultProviderPolicy
+                defaultSystemProvider="WATCH_BATTERY"
+                defaultSystemProviderType="RANGED_VALUE" />
+            <BoundingRoundBox x="0" y="0" width="114" height="72" cornerRadius="26" />
+
+            <Complication type="RANGED_VALUE">
+                <PartDraw x="4" y="4" width="106" height="64" alpha="255">
+                    <Variant mode="AMBIENT" target="alpha" value="0" />
+                    <RoundRectangle x="0" y="0" width="106" height="64" cornerRadiusX="22" cornerRadiusY="22">
+                        <Fill color="[CONFIGURATION.color_theme.2]" />
+                    </RoundRectangle>
+                </PartDraw>
+                <PartDraw x="12" y="10" width="90" height="52" alpha="0">
+                    <Variant mode="AMBIENT" target="alpha" value="255" />
+                    <RoundRectangle x="0" y="0" width="90" height="52" cornerRadiusX="18" cornerRadiusY="18">
+                        <Fill color="#FF000000" />
+                    </RoundRectangle>
+                </PartDraw>
+                <Condition>
+                    <Expressions>
+                        <Expression name="batt_is_low_warn"><![CDATA[[BATTERY_IS_LOW] == 1 || [BATTERY_PERCENT] <= 25]]></Expression>
+                    </Expressions>
+                    <Compare expression="batt_is_low_warn">
+                        <PartImage x="12" y="12" width="28" height="28" tintColor="#FFFF6E40">
+                            <Variant mode="AMBIENT" target="alpha" value="0" />
+                            <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
+                        </PartImage>
+                        <PartText x="42" y="9" width="60" height="34">
+                            <Variant mode="AMBIENT" target="x" value="22" />
+                            <Variant mode="AMBIENT" target="width" value="70" />
+                            <Text align="CENTER" maxLines="1" isAutoSize="TRUE">
+                                <Font family="SYNC_TO_DEVICE" size="23" weight="EXTRA_BOLD" color="#FFFF6E40">
+                                    <Template>%s<Parameter expression="[COMPLICATION.TEXT] != &quot;&quot; &amp;&amp; [COMPLICATION.TEXT] != &quot;/EMPTY/&quot; ? [COMPLICATION.TEXT] : [COMPLICATION.TITLE]" /></Template>
+                                </Font>
+                            </Text>
+                        </PartText>
+                        <PartDraw x="14" y="51" width="86" height="7">
+                            <Variant mode="AMBIENT" target="alpha" value="0" />
+                            <RoundRectangle x="0" y="0" width="86" height="7" cornerRadiusX="3.5" cornerRadiusY="3.5"><Fill color="#38FFFFFF" /></RoundRectangle>
+                        </PartDraw>
+                        <PartDraw x="14" y="51" width="86" height="7">
+                            <Variant mode="AMBIENT" target="alpha" value="0" />
+                            <RoundRectangle x="0" y="0" width="86" height="7" cornerRadiusX="3.5" cornerRadiusY="3.5">
+                                <Transform target="width" value="clamp(([COMPLICATION.RANGED_VALUE_VALUE] - [COMPLICATION.RANGED_VALUE_MIN]) / ([COMPLICATION.RANGED_VALUE_MAX] - [COMPLICATION.RANGED_VALUE_MIN]), 0.12, 1.0) * 86.0" />
+                                <Fill color="#FFFF6E40" />
+                            </RoundRectangle>
+                        </PartDraw>
+                    </Compare>
+                    <Default>
+                        <PartImage x="12" y="12" width="28" height="28" tintColor="#FF69F0AE">
+                            <Variant mode="AMBIENT" target="alpha" value="0" />
+                            <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
+                        </PartImage>
+                        <PartText x="42" y="9" width="60" height="34">
+                            <Variant mode="AMBIENT" target="x" value="22" />
+                            <Variant mode="AMBIENT" target="width" value="70" />
+                            <Text align="CENTER" maxLines="1" isAutoSize="TRUE">
+                                <Font family="SYNC_TO_DEVICE" size="23" weight="EXTRA_BOLD" color="#FF69F0AE">
+                                    <Template>%s<Parameter expression="[COMPLICATION.TEXT] != &quot;&quot; &amp;&amp; [COMPLICATION.TEXT] != &quot;/EMPTY/&quot; ? [COMPLICATION.TEXT] : [COMPLICATION.TITLE]" /></Template>
+                                </Font>
+                            </Text>
+                        </PartText>
+                        <PartDraw x="14" y="51" width="86" height="7">
+                            <Variant mode="AMBIENT" target="alpha" value="0" />
+                            <RoundRectangle x="0" y="0" width="86" height="7" cornerRadiusX="3.5" cornerRadiusY="3.5"><Fill color="#38FFFFFF" /></RoundRectangle>
+                        </PartDraw>
+                        <PartDraw x="14" y="51" width="86" height="7">
+                            <Variant mode="AMBIENT" target="alpha" value="0" />
+                            <RoundRectangle x="0" y="0" width="86" height="7" cornerRadiusX="3.5" cornerRadiusY="3.5">
+                                <Transform target="width" value="clamp(([COMPLICATION.RANGED_VALUE_VALUE] - [COMPLICATION.RANGED_VALUE_MIN]) / ([COMPLICATION.RANGED_VALUE_MAX] - [COMPLICATION.RANGED_VALUE_MIN]), 0.12, 1.0) * 86.0" />
+                                <Fill color="#FF69F0AE" />
+                            </RoundRectangle>
+                        </PartDraw>
+                    </Default>
+                </Condition>
+            </Complication>
+
+            <Complication type="SHORT_TEXT">
+                <PartDraw x="4" y="4" width="106" height="64" alpha="255">
+                    <Variant mode="AMBIENT" target="alpha" value="0" />
+                    <RoundRectangle x="0" y="0" width="106" height="64" cornerRadiusX="22" cornerRadiusY="22">
+                        <Fill color="[CONFIGURATION.color_theme.2]" />
+                    </RoundRectangle>
+                </PartDraw>
+                <PartDraw x="12" y="10" width="90" height="52" alpha="0">
+                    <Variant mode="AMBIENT" target="alpha" value="255" />
+                    <RoundRectangle x="0" y="0" width="90" height="52" cornerRadiusX="18" cornerRadiusY="18">
+                        <Fill color="#FF000000" />
+                    </RoundRectangle>
+                </PartDraw>
+                <Condition>
+                    <Expressions>
+                        <Expression name="s4_has_mono"><![CDATA[[COMPLICATION.MONOCHROMATIC_IMAGE] != null]]></Expression>
+                        <Expression name="s4_has_simg"><![CDATA[[COMPLICATION.SMALL_IMAGE] != null]]></Expression>
+                    </Expressions>
+                    <Compare expression="s4_has_mono">
+                        <PartImage x="12" y="21" width="28" height="30" tintColor="#FF69F0AE">
+                            <Variant mode="AMBIENT" target="alpha" value="0" />
+                            <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
+                        </PartImage>
+                        <PartText x="42" y="12" width="60" height="48">
+                            <Variant mode="AMBIENT" target="x" value="16" />
+                            <Variant mode="AMBIENT" target="width" value="82" />
+                            <Text align="CENTER" maxLines="2" isAutoSize="TRUE">
+                                <Font family="SYNC_TO_DEVICE" size="22" weight="EXTRA_BOLD" color="#FF69F0AE">
+                                    <Template>%s<Parameter expression="[COMPLICATION.TEXT] != &quot;&quot; &amp;&amp; [COMPLICATION.TEXT] != &quot;/EMPTY/&quot; ? [COMPLICATION.TEXT] : [COMPLICATION.TITLE]" /></Template>
+                                </Font>
+                            </Text>
+                        </PartText>
+                    </Compare>
+                    <Compare expression="s4_has_simg">
+                        <PartImage x="12" y="21" width="28" height="30">
+                            <Variant mode="AMBIENT" target="alpha" value="0" />
+                            <Image resource="[COMPLICATION.SMALL_IMAGE]" />
+                        </PartImage>
+                        <PartText x="42" y="12" width="60" height="48">
+                            <Variant mode="AMBIENT" target="x" value="16" />
+                            <Variant mode="AMBIENT" target="width" value="82" />
+                            <Text align="CENTER" maxLines="2" isAutoSize="TRUE">
+                                <Font family="SYNC_TO_DEVICE" size="22" weight="EXTRA_BOLD" color="#FF69F0AE">
+                                    <Template>%s<Parameter expression="[COMPLICATION.TEXT] != &quot;&quot; &amp;&amp; [COMPLICATION.TEXT] != &quot;/EMPTY/&quot; ? [COMPLICATION.TEXT] : [COMPLICATION.TITLE]" /></Template>
+                                </Font>
+                            </Text>
+                        </PartText>
+                    </Compare>
+                    <Default>
+                        <PartText x="14" y="12" width="86" height="48">
+                            <Text align="CENTER" maxLines="2" isAutoSize="TRUE">
+                                <Font family="SYNC_TO_DEVICE" size="22" weight="EXTRA_BOLD" color="#FF69F0AE">
+                                    <Template>%s<Parameter expression="[COMPLICATION.TEXT] != &quot;&quot; &amp;&amp; [COMPLICATION.TEXT] != &quot;/EMPTY/&quot; ? [COMPLICATION.TEXT] : [COMPLICATION.TITLE]" /></Template>
+                                </Font>
+                            </Text>
+                        </PartText>
+                    </Default>
+                </Condition>
+            </Complication>
+
+            <Complication type="MONOCHROMATIC_IMAGE">
+                <PartDraw x="4" y="4" width="106" height="64" alpha="255">
+                    <Variant mode="AMBIENT" target="alpha" value="0" />
+                    <RoundRectangle x="0" y="0" width="106" height="64" cornerRadiusX="22" cornerRadiusY="22">
+                        <Fill color="[CONFIGURATION.color_theme.2]" />
+                    </RoundRectangle>
+                </PartDraw>
+                <PartImage x="37" y="16" width="40" height="40" tintColor="#FF69F0AE">
+                    <Variant mode="AMBIENT" target="alpha" value="0" />
+                    <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
+                </PartImage>
+            </Complication>
+
+            <Complication type="SMALL_IMAGE">
+                <PartDraw x="4" y="4" width="106" height="64" alpha="255">
+                    <Variant mode="AMBIENT" target="alpha" value="0" />
+                    <RoundRectangle x="0" y="0" width="106" height="64" cornerRadiusX="22" cornerRadiusY="22">
+                        <Fill color="[CONFIGURATION.color_theme.2]" />
+                    </RoundRectangle>
+                </PartDraw>
+                <PartImage x="36" y="15" width="42" height="42">
+                    <Variant mode="AMBIENT" target="alpha" value="0" />
+                    <Image resource="[COMPLICATION.SMALL_IMAGE]" />
+                </PartImage>
+            </Complication>
+
+            <Complication type="EMPTY">
+                <Group name="empty_slot_4" x="0" y="0" width="1" height="1" alpha="0" />
+            </Complication>
+        </ComplicationSlot>
+
+        <!-- SLOT 5: SAMSUNG HEALTH ENERGY SCORE / STEPS / WIDE CUSTOM SLOT (x=105, y=314, w=240, h=118) -->
+        <ComplicationSlot
+            slotId="5"
+            name="energy_score_slot"
+            displayName="slot_energy_label"
+            x="105"
+            y="314"
+            width="240"
+            height="118"
+            supportedTypes="RANGED_VALUE GOAL_PROGRESS SHORT_TEXT LONG_TEXT MONOCHROMATIC_IMAGE SMALL_IMAGE EMPTY"
+            isCustomizable="TRUE">
+            <Variant mode="AMBIENT" target="alpha" value="185" />
+            <DefaultProviderPolicy
+                defaultSystemProvider="STEP_COUNT"
+                defaultSystemProviderType="RANGED_VALUE" />
+            <BoundingBox x="0" y="0" width="240" height="118" />
+
+            <Complication type="RANGED_VALUE">
+                <PartDraw x="18" y="6" width="204" height="44" alpha="255">
+                    <Variant mode="AMBIENT" target="alpha" value="0" />
+                    <RoundRectangle x="0" y="0" width="204" height="44" cornerRadiusX="22" cornerRadiusY="22">
+                        <Fill color="[CONFIGURATION.color_theme.2]" />
+                    </RoundRectangle>
+                </PartDraw>
+                <PartDraw x="34" y="6" width="172" height="44" alpha="0">
+                    <Variant mode="AMBIENT" target="alpha" value="255" />
+                    <RoundRectangle x="0" y="0" width="172" height="44" cornerRadiusX="20" cornerRadiusY="20">
+                        <Fill color="#FF000000" />
+                    </RoundRectangle>
+                </PartDraw>
+                <Condition>
+                    <Expressions>
+                        <Expression name="s5_rv_mono"><![CDATA[[COMPLICATION.MONOCHROMATIC_IMAGE] != null]]></Expression>
+                    </Expressions>
+                    <Compare expression="s5_rv_mono">
+                        <PartImage x="38" y="13" width="30" height="30" tintColor="[CONFIGURATION.color_theme.1]">
+                            <Variant mode="AMBIENT" target="alpha" value="0" />
+                            <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
+                        </PartImage>
+                        <PartText x="74" y="8" width="130" height="40">
+                            <Variant mode="AMBIENT" target="x" value="44" />
+                            <Variant mode="AMBIENT" target="width" value="152" />
+                            <Text align="CENTER" maxLines="1" isAutoSize="TRUE">
+                                <Font family="SYNC_TO_DEVICE" size="25" weight="EXTRA_BOLD" color="#FFFFFFFF">
+                                    <Template>%s<Parameter expression="[COMPLICATION.TEXT] != &quot;&quot; &amp;&amp; [COMPLICATION.TEXT] != &quot;/EMPTY/&quot; ? [COMPLICATION.TEXT] : [COMPLICATION.TITLE]" /></Template>
+                                </Font>
+                            </Text>
+                        </PartText>
+                    </Compare>
+                    <Default>
+                        <PartImage x="38" y="13" width="30" height="30">
+                            <Variant mode="AMBIENT" target="alpha" value="0" />
+                            <Image resource="ic_energy" />
+                        </PartImage>
+                        <PartText x="74" y="8" width="130" height="40">
+                            <Variant mode="AMBIENT" target="x" value="44" />
+                            <Variant mode="AMBIENT" target="width" value="152" />
+                            <Text align="CENTER" maxLines="1" isAutoSize="TRUE">
+                                <Font family="SYNC_TO_DEVICE" size="25" weight="EXTRA_BOLD" color="#FFFFFFFF">
+                                    <Template>%s<Parameter expression="[COMPLICATION.TEXT] != &quot;&quot; &amp;&amp; [COMPLICATION.TEXT] != &quot;/EMPTY/&quot; ? [COMPLICATION.TEXT] : [COMPLICATION.TITLE]" /></Template>
+                                </Font>
+                            </Text>
+                        </PartText>
+                    </Default>
+                </Condition>
+                <PartDraw x="0" y="0" width="240" height="118">
+                    <Variant mode="AMBIENT" target="alpha" value="0" />
+                    <Arc centerX="120" centerY="-89" width="372" height="372" startAngle="205" endAngle="155" direction="COUNTER_CLOCKWISE">
+                        <Stroke color="#40FFFFFF" thickness="7" cap="ROUND" />
+                    </Arc>
+                </PartDraw>
+                <PartDraw x="0" y="0" width="240" height="118">
+                    <Variant mode="AMBIENT" target="alpha" value="0" />
+                    <Arc centerX="120" centerY="-89" width="372" height="372" startAngle="205" endAngle="155" direction="COUNTER_CLOCKWISE">
+                        <Transform target="endAngle" value="205.0 - 50.0 * clamp(([COMPLICATION.RANGED_VALUE_VALUE] - [COMPLICATION.RANGED_VALUE_MIN]) / ([COMPLICATION.RANGED_VALUE_MAX] - [COMPLICATION.RANGED_VALUE_MIN]), 0.06, 1.0)" />
+                        <Stroke color="[CONFIGURATION.color_theme.1]" thickness="7" cap="ROUND" />
+                    </Arc>
+                </PartDraw>
+            </Complication>
+
+            <Complication type="GOAL_PROGRESS">
+                <PartDraw x="18" y="6" width="204" height="44" alpha="255">
+                    <Variant mode="AMBIENT" target="alpha" value="0" />
+                    <RoundRectangle x="0" y="0" width="204" height="44" cornerRadiusX="22" cornerRadiusY="22">
+                        <Fill color="[CONFIGURATION.color_theme.2]" />
+                    </RoundRectangle>
+                </PartDraw>
+                <PartDraw x="34" y="6" width="172" height="44" alpha="0">
+                    <Variant mode="AMBIENT" target="alpha" value="255" />
+                    <RoundRectangle x="0" y="0" width="172" height="44" cornerRadiusX="20" cornerRadiusY="20">
+                        <Fill color="#FF000000" />
+                    </RoundRectangle>
+                </PartDraw>
+                <PartImage x="38" y="13" width="30" height="30" tintColor="[CONFIGURATION.color_theme.1]">
+                    <Variant mode="AMBIENT" target="alpha" value="0" />
+                    <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
+                </PartImage>
+                <PartText x="74" y="8" width="130" height="40">
+                    <Variant mode="AMBIENT" target="x" value="44" />
+                    <Variant mode="AMBIENT" target="width" value="152" />
+                    <Text align="CENTER" maxLines="1" isAutoSize="TRUE">
+                        <Font family="SYNC_TO_DEVICE" size="25" weight="EXTRA_BOLD" color="#FFFFFFFF">
+                            <Template>%s<Parameter expression="[COMPLICATION.TEXT] != &quot;&quot; &amp;&amp; [COMPLICATION.TEXT] != &quot;/EMPTY/&quot; ? [COMPLICATION.TEXT] : [COMPLICATION.TITLE]" /></Template>
+                        </Font>
+                    </Text>
+                </PartText>
+                <PartDraw x="0" y="0" width="240" height="118">
+                    <Variant mode="AMBIENT" target="alpha" value="0" />
+                    <Arc centerX="120" centerY="-89" width="372" height="372" startAngle="205" endAngle="155" direction="COUNTER_CLOCKWISE">
+                        <Stroke color="#40FFFFFF" thickness="7" cap="ROUND" />
+                    </Arc>
+                </PartDraw>
+                <PartDraw x="0" y="0" width="240" height="118">
+                    <Variant mode="AMBIENT" target="alpha" value="0" />
+                    <Arc centerX="120" centerY="-89" width="372" height="372" startAngle="205" endAngle="155" direction="COUNTER_CLOCKWISE">
+                        <Transform target="endAngle" value="205.0 - 50.0 * clamp([COMPLICATION.GOAL_PROGRESS_VALUE] / [COMPLICATION.GOAL_PROGRESS_TARGET_VALUE], 0.06, 1.0)" />
+                        <Stroke color="[CONFIGURATION.color_theme.1]" thickness="7" cap="ROUND" />
+                    </Arc>
+                </PartDraw>
+            </Complication>
+
+            <Complication type="SHORT_TEXT">
+                <PartDraw x="18" y="6" width="204" height="44" alpha="255">
+                    <Variant mode="AMBIENT" target="alpha" value="0" />
+                    <RoundRectangle x="0" y="0" width="204" height="44" cornerRadiusX="22" cornerRadiusY="22">
+                        <Fill color="[CONFIGURATION.color_theme.2]" />
+                    </RoundRectangle>
+                </PartDraw>
+                <PartDraw x="34" y="6" width="172" height="44" alpha="0">
+                    <Variant mode="AMBIENT" target="alpha" value="255" />
+                    <RoundRectangle x="0" y="0" width="172" height="44" cornerRadiusX="20" cornerRadiusY="20">
+                        <Fill color="#FF000000" />
+                    </RoundRectangle>
+                </PartDraw>
+                <Condition>
+                    <Expressions>
+                        <Expression name="s5_has_mono"><![CDATA[[COMPLICATION.MONOCHROMATIC_IMAGE] != null]]></Expression>
+                        <Expression name="s5_has_simg"><![CDATA[[COMPLICATION.SMALL_IMAGE] != null]]></Expression>
+                    </Expressions>
+                    <Compare expression="s5_has_mono">
+                        <PartImage x="38" y="13" width="30" height="30" tintColor="[CONFIGURATION.color_theme.1]">
+                            <Variant mode="AMBIENT" target="alpha" value="0" />
+                            <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
+                        </PartImage>
+                        <PartText x="74" y="8" width="130" height="40">
+                            <Variant mode="AMBIENT" target="x" value="44" />
+                            <Variant mode="AMBIENT" target="width" value="152" />
+                            <Text align="CENTER" maxLines="1" isAutoSize="TRUE">
+                                <Font family="SYNC_TO_DEVICE" size="24" weight="EXTRA_BOLD" color="#FFFFFFFF">
+                                    <Template>%s<Parameter expression="[COMPLICATION.TEXT] != &quot;&quot; &amp;&amp; [COMPLICATION.TEXT] != &quot;/EMPTY/&quot; ? [COMPLICATION.TEXT] : [COMPLICATION.TITLE]" /></Template>
+                                </Font>
+                            </Text>
+                        </PartText>
+                    </Compare>
+                    <Compare expression="s5_has_simg">
+                        <PartImage x="38" y="13" width="30" height="30">
+                            <Variant mode="AMBIENT" target="alpha" value="0" />
+                            <Image resource="[COMPLICATION.SMALL_IMAGE]" />
+                        </PartImage>
+                        <PartText x="74" y="8" width="130" height="40">
+                            <Variant mode="AMBIENT" target="x" value="44" />
+                            <Variant mode="AMBIENT" target="width" value="152" />
+                            <Text align="CENTER" maxLines="1" isAutoSize="TRUE">
+                                <Font family="SYNC_TO_DEVICE" size="24" weight="EXTRA_BOLD" color="#FFFFFFFF">
+                                    <Template>%s<Parameter expression="[COMPLICATION.TEXT] != &quot;&quot; &amp;&amp; [COMPLICATION.TEXT] != &quot;/EMPTY/&quot; ? [COMPLICATION.TEXT] : [COMPLICATION.TITLE]" /></Template>
+                                </Font>
+                            </Text>
+                        </PartText>
+                    </Compare>
+                    <Default>
+                        <PartText x="32" y="8" width="176" height="40">
+                            <Text align="CENTER" maxLines="1" isAutoSize="TRUE">
+                                <Font family="SYNC_TO_DEVICE" size="24" weight="EXTRA_BOLD" color="#FFFFFFFF">
+                                    <Template>%s<Parameter expression="[COMPLICATION.TEXT] != &quot;&quot; &amp;&amp; [COMPLICATION.TEXT] != &quot;/EMPTY/&quot; ? [COMPLICATION.TEXT] : [COMPLICATION.TITLE]" /></Template>
+                                </Font>
+                            </Text>
+                        </PartText>
+                    </Default>
+                </Condition>
+            </Complication>
+
+            <Complication type="LONG_TEXT">
+                <PartDraw x="18" y="6" width="204" height="44" alpha="255">
+                    <Variant mode="AMBIENT" target="alpha" value="0" />
+                    <RoundRectangle x="0" y="0" width="204" height="44" cornerRadiusX="22" cornerRadiusY="22">
+                        <Fill color="[CONFIGURATION.color_theme.2]" />
+                    </RoundRectangle>
+                </PartDraw>
+                <PartText x="30" y="8" width="180" height="40">
+                    <Text align="CENTER" maxLines="2" isAutoSize="TRUE">
+                        <Font family="SYNC_TO_DEVICE" size="18" weight="EXTRA_BOLD" color="#FFFFFFFF">
+                            <Template>%s<Parameter expression="[COMPLICATION.TEXT] != &quot;&quot; &amp;&amp; [COMPLICATION.TEXT] != &quot;/EMPTY/&quot; ? [COMPLICATION.TEXT] : [COMPLICATION.TITLE]" /></Template>
+                        </Font>
+                    </Text>
+                </PartText>
+            </Complication>
+
+            <Complication type="MONOCHROMATIC_IMAGE">
+                <PartDraw x="18" y="6" width="204" height="44" alpha="255">
+                    <Variant mode="AMBIENT" target="alpha" value="0" />
+                    <RoundRectangle x="0" y="0" width="204" height="44" cornerRadiusX="22" cornerRadiusY="22">
+                        <Fill color="[CONFIGURATION.color_theme.2]" />
+                    </RoundRectangle>
+                </PartDraw>
+                <PartImage x="101" y="9" width="38" height="38" tintColor="[CONFIGURATION.color_theme.1]">
+                    <Variant mode="AMBIENT" target="alpha" value="0" />
+                    <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]" />
+                </PartImage>
+            </Complication>
+
+            <Complication type="SMALL_IMAGE">
+                <PartDraw x="18" y="6" width="204" height="44" alpha="255">
+                    <Variant mode="AMBIENT" target="alpha" value="0" />
+                    <RoundRectangle x="0" y="0" width="204" height="44" cornerRadiusX="22" cornerRadiusY="22">
+                        <Fill color="[CONFIGURATION.color_theme.2]" />
+                    </RoundRectangle>
+                </PartDraw>
+                <PartImage x="100" y="8" width="40" height="40">
+                    <Variant mode="AMBIENT" target="alpha" value="0" />
+                    <Image resource="[COMPLICATION.SMALL_IMAGE]" />
+                </PartImage>
+            </Complication>
+
+            <Complication type="EMPTY">
+                <Group name="empty_slot_5" x="0" y="0" width="1" height="1" alpha="0" />
+            </Complication>
+        </ComplicationSlot>
+
+        <!-- ================================================================== -->
+        <!-- 7. SWITCHABLE CLOCK MODES (SINGLE FLAT ListConfiguration!)         -->
+        <!--    Zero nested ListConfiguration -> Zero ConcurrentModificationEx! -->
+        <!-- ================================================================== -->
+        <ListConfiguration id="clock_mode">
+
+            <!-- MODE A (DEFAULT): DIGITAL ONLY — Huge 60px Time + Bold 18px Date -->
+            <ListOption id="digital">
+                <Group name="clock_digital_group" x="0" y="0" width="450" height="450">
+                    <DigitalClock x="95" y="56" width="260" height="64">
+                        <TimeText
+                            x="0"
+                            y="0"
+                            width="260"
+                            height="64"
+                            format="hh:mm"
+                            hourFormat="SYNC_TO_DEVICE"
+                            align="CENTER">
+                            <Variant mode="AMBIENT" target="alpha" value="215" />
+                            <Font family="SYNC_TO_DEVICE" size="60" weight="BLACK" color="#FFFFFFFF" />
+                        </TimeText>
+                    </DigitalClock>
+
+                    <PartText x="105" y="117" width="240" height="24">
+                        <Variant mode="AMBIENT" target="alpha" value="175" />
+                        <Text align="CENTER" maxLines="1" isAutoSize="TRUE">
+                            <Font family="SYNC_TO_DEVICE" size="18" weight="EXTRA_BOLD" color="[CONFIGURATION.color_theme.1]">
+                                <Template>%s · %s %d<Parameter expression="[DAY_OF_WEEK_S]" /><Parameter expression="[MONTH_S]" /><Parameter expression="[DAY]" /></Template>
+                            </Font>
+                        </Text>
+                    </PartText>
+                </Group>
+            </ListOption>
+
+            <!-- MODE B: ANALOG ONLY — Date Pill + Candy-Cane Hour & Gold Minute Hands -->
+            <ListOption id="analog">
+                <Group name="clock_analog_group" x="0" y="0" width="450" height="450">
+                    <PartDraw x="135" y="76" width="180" height="34" alpha="220">
+                        <Variant mode="AMBIENT" target="alpha" value="0" />
+                        <RoundRectangle x="1" y="1" width="178" height="32" cornerRadiusX="16" cornerRadiusY="16">
+                            <Fill color="[CONFIGURATION.color_theme.2]" />
+                            <Stroke color="[CONFIGURATION.color_theme.1]" thickness="1.5" />
+                        </RoundRectangle>
+                    </PartDraw>
+
+                    <PartText x="141" y="80" width="168" height="26">
+                        <Variant mode="AMBIENT" target="alpha" value="180" />
+                        <Text align="CENTER" maxLines="1" isAutoSize="TRUE">
+                            <Font family="SYNC_TO_DEVICE" size="18" weight="EXTRA_BOLD" color="[CONFIGURATION.color_theme.1]">
+                                <Template>%s · %s %d<Parameter expression="[DAY_OF_WEEK_S]" /><Parameter expression="[MONTH_S]" /><Parameter expression="[DAY]" /></Template>
+                            </Font>
+                        </Text>
+                    </PartText>
+
+                    <AnalogClock x="0" y="0" width="450" height="450">
+                        <HourHand resource="hand_hour" x="211" y="130" width="28" height="115" pivotX="0.5" pivotY="0.826087" alpha="255">
+                            <Variant mode="AMBIENT" target="alpha" value="195" />
+                        </HourHand>
+                        <MinuteHand resource="hand_minute" x="211" y="75" width="28" height="170" pivotX="0.5" pivotY="0.882353" alpha="255">
+                            <Variant mode="AMBIENT" target="alpha" value="195" />
+                        </MinuteHand>
+                    </AnalogClock>
+                </Group>
+            </ListOption>
+
+            <!-- MODE C: HYBRID — 58px Digital Time + Date + Festive Hands -->
+            <ListOption id="hybrid">
+                <Group name="clock_hybrid_group" x="0" y="0" width="450" height="450">
+                    <DigitalClock x="95" y="56" width="260" height="64">
+                        <TimeText
+                            x="0"
+                            y="0"
+                            width="260"
+                            height="64"
+                            format="hh:mm"
+                            hourFormat="SYNC_TO_DEVICE"
+                            align="CENTER">
+                            <Variant mode="AMBIENT" target="alpha" value="210" />
+                            <Font family="SYNC_TO_DEVICE" size="58" weight="BLACK" color="#FFFFFFFF" />
+                        </TimeText>
+                    </DigitalClock>
+
+                    <PartText x="105" y="117" width="240" height="24">
+                        <Variant mode="AMBIENT" target="alpha" value="170" />
+                        <Text align="CENTER" maxLines="1" isAutoSize="TRUE">
+                            <Font family="SYNC_TO_DEVICE" size="18" weight="EXTRA_BOLD" color="[CONFIGURATION.color_theme.1]">
+                                <Template>%s · %s %d<Parameter expression="[DAY_OF_WEEK_S]" /><Parameter expression="[MONTH_S]" /><Parameter expression="[DAY]" /></Template>
+                            </Font>
+                        </Text>
+                    </PartText>
+
+                    <AnalogClock x="0" y="0" width="450" height="450">
+                        <HourHand resource="hand_hour" x="211" y="130" width="28" height="115" pivotX="0.5" pivotY="0.826087" alpha="205">
+                            <Variant mode="AMBIENT" target="alpha" value="145" />
+                        </HourHand>
+                        <MinuteHand resource="hand_minute" x="211" y="75" width="28" height="170" pivotX="0.5" pivotY="0.882353" alpha="205">
+                            <Variant mode="AMBIENT" target="alpha" value="145" />
+                        </MinuteHand>
+                    </AnalogClock>
+                </Group>
+            </ListOption>
+        </ListConfiguration>
+
+        <!-- ================================================================== -->
+        <!-- 8. SMART BATTERY SAVER: FAIRY LIGHTS + BEZEL SECOND ORNAMENT       -->
+        <!--    (SINGLE FLAT ListConfiguration! ZERO TAP animation lag!)        -->
+        <!-- ================================================================== -->
+        <ListConfiguration id="power_mode">
+
+            <!-- AUTO ECO (Default): Gentle wake twinkle (ON_VISIBLE only, NO TAP lag!) + 5Hz ornament -->
+            <ListOption id="auto_eco">
+                <Group name="pwr_auto_eco_grp" x="0" y="0" width="450" height="450">
+                    <Variant mode="AMBIENT" target="alpha" value="0" />
+                    <Condition>
+                        <Expressions>
+                            <Expression name="eco_pwr_ok"><![CDATA[[BATTERY_IS_LOW] == 0 && ([BATTERY_PERCENT] > 25 || [BATTERY_CHARGING_STATUS] == 1)]]></Expression>
+                        </Expressions>
+                        <Compare expression="eco_pwr_ok">
+                            <PartAnimatedImage x="0" y="0" width="450" height="450" alpha="255">
+                                <AnimationController play="ON_VISIBLE" repeat="FALSE" loopCount="3" afterPlaying="FIRST_FRAME" />
+                                <SequenceImages frameRate="2" loopCount="1">
+                                    <Image resource="fairy_lights_0" />
+                                    <Image resource="fairy_lights_1" />
+                                </SequenceImages>
+                            </PartAnimatedImage>
+                            <AnalogClock x="0" y="0" width="450" height="450">
+                                <SecondHand resource="hand_second_bezel" x="211" y="8" width="28" height="220" pivotX="0.5" pivotY="0.986364" alpha="255">
+                                    <Sweep frequency="5" />
+                                </SecondHand>
+                            </AnalogClock>
+                        </Compare>
+                        <Default>
+                            <PartImage x="0" y="0" width="450" height="450" alpha="185">
+                                <Image resource="fairy_lights_0" />
+                            </PartImage>
+                        </Default>
+                    </Condition>
+                </Group>
+            </ListOption>
+
+            <!-- MAX BATTERY: Pure static bulbs, 0Hz second hand, 0 FPS overhead -->
+            <ListOption id="max_battery">
+                <PartImage x="0" y="0" width="450" height="450" alpha="210">
+                    <Variant mode="AMBIENT" target="alpha" value="0" />
+                    <Image resource="fairy_lights_0" />
+                </PartImage>
+            </ListOption>
+
+            <!-- VIVID ALWAYS: Continuous 2 FPS fairy twinkle + smooth 15Hz bezel ornament -->
+            <ListOption id="vivid_always">
+                <Group name="pwr_vivid_grp" x="0" y="0" width="450" height="450">
+                    <Variant mode="AMBIENT" target="alpha" value="0" />
+                    <Condition>
+                        <Expressions>
+                            <Expression name="viv_pwr_ok"><![CDATA[[BATTERY_IS_LOW] == 0 && ([BATTERY_PERCENT] > 25 || [BATTERY_CHARGING_STATUS] == 1)]]></Expression>
+                        </Expressions>
+                        <Compare expression="viv_pwr_ok">
+                            <PartAnimatedImage x="0" y="0" width="450" height="450" alpha="255">
+                                <AnimationController play="ON_VISIBLE" repeat="TRUE" />
+                                <SequenceImages frameRate="2" loopCount="1">
+                                    <Image resource="fairy_lights_0" />
+                                    <Image resource="fairy_lights_1" />
+                                </SequenceImages>
+                            </PartAnimatedImage>
+                            <AnalogClock x="0" y="0" width="450" height="450">
+                                <SecondHand resource="hand_second_bezel" x="211" y="8" width="28" height="220" pivotX="0.5" pivotY="0.986364" alpha="255">
+                                    <Sweep frequency="15" />
+                                </SecondHand>
+                            </AnalogClock>
+                        </Compare>
+                        <Default>
+                            <PartImage x="0" y="0" width="450" height="450" alpha="185">
+                                <Image resource="fairy_lights_0" />
+                            </PartImage>
+                        </Default>
+                    </Condition>
+                </Group>
+            </ListOption>
+        </ListConfiguration>
+
+        <!-- ================================================================== -->
+        <!-- 9. FALLING SNOW & LIVE WEATHER PARTICLES                           -->
+        <!--    (SINGLE FLAT BooleanConfiguration! ON_VISIBLE only, NO TAP lag) -->
+        <!-- ================================================================== -->
+        <BooleanConfiguration id="snow_enabled">
+            <BooleanOption id="TRUE">
+                <Group name="snow_weather_fx_grp" x="0" y="0" width="450" height="450">
+                    <Variant mode="AMBIENT" target="alpha" value="0" />
+                    <Condition>
+                        <Expressions>
+                            <Expression name="fx_batt_ok"><![CDATA[[BATTERY_IS_LOW] == 0 && ([BATTERY_PERCENT] > 25 || [BATTERY_CHARGING_STATUS] == 1)]]></Expression>
+                        </Expressions>
+                        <Compare expression="fx_batt_ok">
+                            <Condition>
+                                <Expressions>
+                                    <Expression name="fx_windy"><![CDATA[[WEATHER.IS_AVAILABLE] == 1 && [WEATHER.CONDITION] == 15]]></Expression>
+                                    <Expression name="fx_rain"><![CDATA[[WEATHER.IS_AVAILABLE] == 1 && ([WEATHER.CONDITION] == 4 || [WEATHER.CONDITION] == 6 || [WEATHER.CONDITION] == 9 || [WEATHER.CONDITION] == 10 || [WEATHER.CONDITION] == 12)]]></Expression>
+                                </Expressions>
+                                <Compare expression="fx_windy">
+                                    <PartAnimatedImage x="0" y="0" width="450" height="450" alpha="225">
+                                        <AnimationController play="ON_VISIBLE" repeat="FALSE" loopCount="3" afterPlaying="FIRST_FRAME" />
+                                        <SequenceImages frameRate="8" loopCount="1">
+                                            <Image resource="wind_00" /><Image resource="wind_01" /><Image resource="wind_02" />
+                                            <Image resource="wind_03" /><Image resource="wind_04" /><Image resource="wind_05" />
+                                        </SequenceImages>
+                                    </PartAnimatedImage>
+                                </Compare>
+                                <Compare expression="fx_rain">
+                                    <PartAnimatedImage x="0" y="0" width="450" height="450" alpha="225">
+                                        <AnimationController play="ON_VISIBLE" repeat="FALSE" loopCount="3" afterPlaying="FIRST_FRAME" />
+                                        <SequenceImages frameRate="8" loopCount="1">
+                                            <Image resource="rain_00" /><Image resource="rain_01" /><Image resource="rain_02" />
+                                            <Image resource="rain_03" /><Image resource="rain_04" /><Image resource="rain_05" />
+                                        </SequenceImages>
+                                    </PartAnimatedImage>
+                                </Compare>
+                                <Default>
+                                    <PartAnimatedImage x="0" y="0" width="450" height="450" alpha="200">
+                                        <Gyro
+                                            x="(5.0 / 90.0) * clamp([ACCELEROMETER_ANGLE_X], -90, 90)"
+                                            y="(5.0 / 90.0) * clamp([ACCELEROMETER_ANGLE_Y], -90, 90)" />
+                                        <AnimationController play="ON_VISIBLE" repeat="FALSE" loopCount="3" afterPlaying="FIRST_FRAME" />
+                                        <SequenceImages frameRate="6" loopCount="1">
+                                            <Image resource="snow_00" /><Image resource="snow_01" /><Image resource="snow_02" />
+                                            <Image resource="snow_03" /><Image resource="snow_04" /><Image resource="snow_05" />
+                                        </SequenceImages>
+                                    </PartAnimatedImage>
+                                </Default>
+                            </Condition>
+                        </Compare>
+                    </Condition>
+                </Group>
+            </BooleanOption>
+        </BooleanConfiguration>
+
+    </Scene>
+</WatchFace>

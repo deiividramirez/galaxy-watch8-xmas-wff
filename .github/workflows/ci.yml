@@ -1,0 +1,72 @@
+name: CI — Test, Validate WFF v4 & Build APK
+
+on:
+  push:
+    branches: [master, main]
+    tags: ["v*"]
+  pull_request:
+    branches: [master, main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  validate-and-build:
+    name: Test Simulator Parity, WFF v4 XSD, OPR & APK RAM Budget
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: gradle
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Set up Python & Pillow
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Python Dependencies
+        run: python -m pip install --upgrade pip pillow
+
+      - name: Run Unit, Parity & Burn-In Regression Tests
+        run: python -m unittest discover -s tests -v
+
+      - name: Ensure Android SDK API 36 & Build-Tools
+        run: |
+          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null || true
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-36" "build-tools;36.0.0"
+
+      - name: Regenerate Drawables & Run 4-Stage WFF v4 Optimizer + Validator + Build
+        run: |
+          python .agents/skills/wff-custom-assets/scripts/generate_wff_drawables.py
+          python tools/optimize_watchface.py
+
+      - name: Upload Watch 8 APK & Optimization Telemetry Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: galaxy-watch8-xmas-wff-apk
+          path: |
+            watch8-holiday-xmas.apk
+            watchface/optimization_report.json
+          if-no-files-found: error
+
+      - name: Publish GitHub Release APK (on v* tags)
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          files: |
+            watch8-holiday-xmas.apk
+            watchface/optimization_report.json

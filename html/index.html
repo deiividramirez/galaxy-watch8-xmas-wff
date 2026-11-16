@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Interactive Samsung Galaxy Watch 8 Simulator &amp; Custom-Photo Holiday Watch Face built on Wear OS 6 Watch Face Format v4." />
+  <meta name="theme-color" content="#0b1116" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23163020' stroke='%23f5c542' stroke-width='4'/%3E%3Ctext x='32' y='43' font-size='34' text-anchor='middle'%3E%F0%9F%8E%84%3C/text%3E%3C/svg%3E" />
+  <title>Holiday Pet &amp; Custom Photo — Samsung Galaxy Watch 8 Simulator (WFF v4)</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <!-- Left / Center Stage: Authentic Galaxy Watch 8 Hardware Preview -->
+    <main class="watch-stage">
+      <header class="stage-header">
+        <div class="header-pill-row">
+          <div class="brand-pill">
+            <span class="dot-live"></span>
+            <span>Wear OS 6 · Watch Face Format v4 · <code>450×450</code> Virtual Canvas</span>
+          </div>
+          <a
+            class="apk-download-pill"
+            id="apkDownloadBtn"
+            href="../watch8-holiday-xmas.apk"
+            download="watch8-holiday-xmas.apk"
+            title="Download prebuilt Wear OS 6 Watch Face Format v4 APK (~311 KB, 0 DEX)"
+          >⬇️ Download Watch 8 APK</a>
+        </div>
+        <h1 class="stage-title">Holiday Pet Xmas <span>Watch 8 Edition</span></h1>
+        <p class="stage-subtitle">Move mouse over watch for 3D wrist-tilt snowglobe parallax · Upload any custom pet/family photo live</p>
+      </header>
+
+      <div class="watch-rig" id="watchRig">
+        <!-- Top Watch Strap -->
+        <div class="watch-strap strap-top">
+          <div class="strap-stitch"></div>
+        </div>
+
+        <!-- Samsung Galaxy Watch 8 Signature Squircle Cushion Chassis -->
+        <div class="watch8-cushion model-44mm" id="watchChassis">
+          <!-- Right-side Physical Buttons (Home w/ accent ring + Back) -->
+          <button class="hw-btn hw-btn-home" id="hwBtnHome" title="Watch 8 Home Button (Toggle Active / AOD)">
+            <span class="accent-ring"></span>
+          </button>
+          <button class="hw-btn hw-btn-back" id="hwBtnBack" title="Watch 8 Back Button (Cycle Clock Style)"></button>
+
+          <!-- Optional Classic 46mm Rotating Bezel Notches -->
+          <div class="classic-bezel-ring" id="classicBezelRing" aria-hidden="true"></div>
+
+          <!-- Physical Circular Super AMOLED Display Viewport -->
+          <div class="watch-amoled-screen" id="amoledViewport">
+            <!-- Exact 450x450 Watch Face Format (WFF v4 v2.0) Virtual Scene -->
+            <div class="wff-scene theme-cranberry clock-digital" id="wffScene">
+              <!-- Layer 1: Deep Holiday Radial Background + Live Weather Sky Overlay (Hidden in AOD) -->
+              <div class="wff-bg-layer" id="wffBgLayer"></div>
+              <img src="assets/icons/sky_sunny.webp" alt="" class="wff-sky-overlay hide-in-aod" id="wffSkyOverlay" />
+
+              <!-- Layer 2: Outer Dial SVG (Minute Ticks, Twinkling Fairy Lights, Curved Ranged Arcs) -->
+              <svg class="wff-dial-svg" viewBox="0 0 450 450" width="450" height="450" aria-hidden="true">
+                <defs>
+                  <linearGradient id="energyGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#38ef7d" />
+                    <stop offset="50%" stop-color="#64b5f6" />
+                    <stop offset="100%" stop-color="#b388ff" />
+                  </linearGradient>
+                  <linearGradient id="uvGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#66bb6a" />
+                    <stop offset="45%" stop-color="#ffca28" />
+                    <stop offset="75%" stop-color="#ffa726" />
+                    <stop offset="100%" stop-color="#ef5350" />
+                  </linearGradient>
+                  <linearGradient id="candyHandGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="#fff8e7" />
+                    <stop offset="25%" stop-color="#d42426" />
+                    <stop offset="50%" stop-color="#fff8e7" />
+                    <stop offset="75%" stop-color="#d42426" />
+                    <stop offset="100%" stop-color="#f5c542" />
+                  </linearGradient>
+                  <filter id="softGlow" x="-30%" y="-30%" width="160%" height="160%">
+                    <feGaussianBlur stdDeviation="2.5" result="blur" />
+                    <feMerge>
+                      <feMergeNode in="blur" />
+                      <feMergeNode in="SourceGraphic" />
+                    </feMerge>
+                  </filter>
+                </defs>
+
+                <!-- Subtle Outer Bezel Ring -->
+                <circle cx="225" cy="225" r="216" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="1.5" class="hide-in-aod" />
+
+                <!-- 60 Minute Ticks + 12 Fairy Light Bulbs (Populated by simulator.js) -->
+                <g id="dialTicksGroup"></g>
+                <g id="fairyLightsGroup" class="hide-in-aod"></g>
+
+                <!-- Bottom Curved Track & Active Progress Arc for Slot 5 (Samsung Energy Score) -->
+                <path id="energyArcTrack" d="" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="7" stroke-linecap="round" />
+                <path id="energyArcFill" d="" fill="none" stroke="url(#energyGrad)" stroke-width="7" stroke-linecap="round" filter="url(#softGlow)" />
+
+                <!-- Sweeping Bezel Second Ornament (Digital & Hybrid Modes) -->
+                <g id="bezelSecondOrnament" class="hide-in-aod">
+                  <circle cx="225" cy="19" r="5" fill="var(--theme-accent)" filter="url(#softGlow)" />
+                  <circle cx="225" cy="19" r="2.2" fill="#ffffff" />
+                </g>
+              </svg>
+
+              <!-- Layer 3: Centerpiece Medallion (x=151, y=151, w=148, h=148) -->
+              <div class="centerpiece-medallion" id="centerpieceMedallion">
+                <div class="medallion-halo hide-in-aod"></div>
+                <img
+                  src="assets/centerpiece_primary.png"
+                  alt="Holiday Cat Centerpiece Portrait"
+                  class="centerpiece-img centerpiece-img-active"
+                  id="centerpieceActiveImg"
+                />
+                <img
+                  src="assets/centerpiece_aod.png"
+                  alt="Burn-In-Safe Always-On Display Outline"
+                  class="centerpiece-img centerpiece-img-aod"
+                  id="centerpieceAodImg"
+                />
+                <div class="medallion-ring"></div>
+              </div>
+
+              <!-- Layer 4: High-Visibility Christmas Countdown & Unobstructed 60px Digital Clock -->
+              <div class="xmas-countdown-pill" id="xmasCountdownPill" title="WFF [DAY_OF_YEAR] Expression">
+                <span class="xmas-icon" id="xmasIcon">🎄</span>
+                <span id="xmasCountdownText">40D TO XMAS</span>
+              </div>
+
+              <div class="digital-clock-block" id="digitalClockBlock">
+                <div class="digital-time-row">
+                  <span class="digital-hhmm" id="digitalHhmm">08:52</span>
+                  <span class="digital-sec hide-in-aod" id="digitalSec" hidden>00</span>
+                </div>
+                <div class="digital-date-row" id="digitalDate">SUN · NOV 15</div>
+              </div>
+
+              <!-- Analog-Only Compact Date Pill (Shown when clock_mode == ANALOG) -->
+              <div class="analog-date-pill" id="analogDatePill">SUN · NOV 15</div>
+
+              <!-- Layer 5: 5 Unified Zero-Clip Samsung Complication Capsules (v2.1 — 114x72 r=26) -->
+              <!-- Slot 1: Live Weather (x=28, y=146, w=114, h=72) -->
+              <div class="comp-slot comp-weather" id="slot1" data-slot-id="1" data-wff-bounds="x=28 y=146 w=114 h=72 r=26">
+                <div class="comp-hero-row">
+                  <img src="assets/icons/wx_sunny.webp" alt="Weather" class="comp-img-icon wx-img-icon hide-in-aod" id="weatherIconImg" />
+                  <span class="comp-primary" id="weatherTemp">19°</span>
+                </div>
+              </div>
+
+              <!-- Slot 2: Sun Heat / UV Index (x=308, y=146, w=114, h=72) -->
+              <div class="comp-slot comp-uv" id="slot2" data-slot-id="2" data-wff-bounds="x=308 y=146 w=114 h=72 r=26">
+                <div class="comp-hero-row">
+                  <img src="assets/icons/ic_uv_sun.webp" alt="UV Sun Heat" class="comp-img-icon" />
+                  <span class="comp-primary uv-num" id="uvValueText">UV 4</span>
+                </div>
+                <div class="comp-mini-bar">
+                  <div class="comp-mini-fill uv-fill" id="uvBarFill"></div>
+                </div>
+              </div>
+
+              <!-- Slot 3: Samsung Health Heart Rate (x=28, y=232, w=114, h=72) -->
+              <div class="comp-slot comp-hr" id="slot3" data-slot-id="3" data-wff-bounds="x=28 y=232 w=114 h=72 r=26">
+                <div class="comp-hero-row">
+                  <img src="assets/icons/ic_heart.webp" alt="Heart Rate" class="comp-img-icon heart-pulse" id="heartIcon" />
+                  <span class="comp-primary hr-num" id="hrValueText">83</span>
+                </div>
+                <div class="comp-mini-bar">
+                  <div class="comp-mini-fill hr-fill" id="hrBarFill"></div>
+                </div>
+              </div>
+
+              <!-- Slot 4: Watch Battery (x=308, y=232, w=114, h=72 — Zero Clip + Low Battery Alert!) -->
+              <div class="comp-slot comp-battery" id="slot4" data-slot-id="4" data-wff-bounds="x=308 y=232 w=114 h=72 r=26">
+                <div class="comp-hero-row">
+                  <img src="assets/icons/ic_battery.webp" alt="Battery" class="comp-img-icon hide-in-aod" id="battIcon" />
+                  <span class="comp-primary batt-num" id="battValueText">83%</span>
+                </div>
+                <div class="comp-mini-bar hide-in-aod">
+                  <div class="comp-mini-fill batt-fill" id="battBarFill"></div>
+                </div>
+              </div>
+
+              <!-- Slot 5: Samsung Health Energy Score (x=119, y=316, w=212, h=52 + Unclipped r=186 Arc) -->
+              <div class="comp-slot comp-energy" id="slot5" data-slot-id="5" data-wff-bounds="x=105 y=314 w=240 h=118">
+                <div class="energy-badge-row">
+                  <img src="assets/icons/ic_energy.webp" alt="Energy Score" class="comp-img-icon hide-in-aod" />
+                  <span class="energy-score-num" id="energyValueText">86</span>
+                </div>
+              </div>
+
+              <!-- Layer 6: Analog Watch Hands (<AnalogHands> in Hybrid & Analog modes) -->
+              <svg class="wff-hands-svg" id="analogHandsSvg" viewBox="0 0 450 450" width="450" height="450">
+                <!-- Hour Hand (Pivot 225,225) -->
+                <g id="hourHandGroup">
+                  <line x1="225" y1="238" x2="225" y2="128" stroke="rgba(0,0,0,0.55)" stroke-width="10" stroke-linecap="round" />
+                  <line x1="225" y1="236" x2="225" y2="130" stroke="url(#candyHandGrad)" stroke-width="7" stroke-linecap="round" />
+                </g>
+                <!-- Minute Hand (Pivot 225,225) -->
+                <g id="minuteHandGroup">
+                  <line x1="225" y1="242" x2="225" y2="74" stroke="rgba(0,0,0,0.55)" stroke-width="8" stroke-linecap="round" />
+                  <line x1="225" y1="240" x2="225" y2="76" stroke="#f5c542" stroke-width="5" stroke-linecap="round" />
+                  <line x1="225" y1="145" x2="225" y2="86" stroke="#ffffff" stroke-width="2" stroke-linecap="round" />
+                </g>
+                <!-- Sweeping Second Hand (Hidden in AOD) -->
+                <g id="secondHandGroup" class="hide-in-aod">
+                  <line x1="225" y1="255" x2="225" y2="48" stroke="var(--theme-primary)" stroke-width="2.2" stroke-linecap="round" />
+                  <circle cx="225" cy="64" r="4.5" fill="#f5c542" stroke="var(--theme-primary)" stroke-width="1.8" />
+                </g>
+                <!-- Center Cap -->
+                <circle cx="225" cy="225" r="7.5" fill="#1b1f23" stroke="#f5c542" stroke-width="2.5" />
+                <circle cx="225" cy="225" r="2.5" fill="var(--theme-primary)" />
+              </svg>
+
+              <!-- Layer 7: Falling Snow Overlay Canvas (<= 15 FPS WFF AnimatedImages Spec) -->
+              <canvas class="wff-snow-canvas hide-in-aod" id="snowCanvas" width="450" height="450"></canvas>
+
+              <!-- Layer 8: Optional WFF 450x450 Coordinate & Complication Slot Inspector -->
+              <div class="wff-inspector-overlay" id="wffInspectorOverlay" hidden>
+                <div class="insp-crosshair-h"></div>
+                <div class="insp-crosshair-v"></div>
+                <div class="insp-box" style="left:151px;top:151px;width:148px;height:148px;border-radius:50%;">
+                  <span>PartImage / Photos: Centerpiece (148×148)</span>
+                </div>
+                <div class="insp-box slot-box" style="left:28px;top:146px;width:114px;height:72px;border-radius:26px;">
+                  <span>slotId=1 Live Weather</span>
+                </div>
+                <div class="insp-box slot-box" style="left:308px;top:146px;width:114px;height:72px;border-radius:26px;">
+                  <span>slotId=2 UV Sun Heat</span>
+                </div>
+                <div class="insp-box slot-box" style="left:28px;top:232px;width:114px;height:72px;border-radius:26px;">
+                  <span>slotId=3 Heart Rate</span>
+                </div>
+                <div class="insp-box slot-box" style="left:308px;top:232px;width:114px;height:72px;border-radius:26px;">
+                  <span>slotId=4 Watch Battery</span>
+                </div>
+                <div class="insp-box slot-box" style="left:105px;top:314px;width:240px;height:118px;border-radius:16px;">
+                  <span>slotId=5 Energy + Arc</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom Watch Strap -->
+        <div class="watch-strap strap-bottom">
+          <div class="strap-stitch"></div>
+        </div>
+      </div>
+
+      <!-- Live WFF Hardware Compliance Telemetry Bar -->
+      <section class="telemetry-bar" aria-label="Watch Face Format Hardware Telemetry">
+        <div class="telemetry-chip">
+          <span class="t-label">Physical Screen</span>
+          <strong id="telScreenSpec">44mm · 480×480 px</strong>
+        </div>
+        <div class="telemetry-chip">
+          <span class="t-label">WFF Scale Factor</span>
+          <strong id="telScaleSpec">1.067× (from 450px)</strong>
+        </div>
+        <div class="telemetry-chip">
+          <span class="t-label">AOD Burn-In OPR</span>
+          <strong id="telOprValue" class="status-pass">6.4% (&lt; 15% OK)</strong>
+        </div>
+        <div class="telemetry-chip">
+          <span class="t-label">WFF RAM Footprint</span>
+          <strong id="telRamValue" class="status-pass">1.42 MB (&lt; 10 MB AOD OK)</strong>
+        </div>
+        <div class="telemetry-chip">
+          <span class="t-label">Snow / Light FPS</span>
+          <strong id="telFpsValue" class="status-pass">15 FPS Cap</strong>
+        </div>
+      </section>
+    </main>
+
+    <!-- Right Control Deck: WFF UserConfigurations + Samsung Complication Simulator -->
+    <aside class="control-panel">
+      <div class="panel-section">
+        <div class="section-head">
+          <h2>1. Watch 8 Hardware &amp; Power State</h2>
+        </div>
+        <div class="segmented-row" role="group" aria-label="Power Mode">
+          <button type="button" class="seg-btn active" data-power="active">🔆 Active (Interactive)</button>
+          <button type="button" class="seg-btn" data-power="aod">🌙 Always-On (AOD)</button>
+        </div>
+        <div class="segmented-row" role="group" aria-label="Galaxy Watch 8 Model" style="margin-top:8px;">
+          <button type="button" class="seg-btn active" data-model="44mm">Watch 8 44mm</button>
+          <button type="button" class="seg-btn" data-model="40mm">Watch 8 40mm</button>
+          <button type="button" class="seg-btn" data-model="classic">46mm Classic</button>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="section-head">
+          <h2>2. On-Watch Customize (<code>&lt;UserConfigurations&gt;</code>)</h2>
+        </div>
+
+        <label class="field-label">Clock Mode (<code>clock_mode</code>)</label>
+        <div class="segmented-row" role="group" aria-label="Clock Mode">
+          <button type="button" class="seg-btn active" data-clock="digital">Digital (Default)</button>
+          <button type="button" class="seg-btn" data-clock="analog">Analog</button>
+          <button type="button" class="seg-btn" data-clock="hybrid">Hybrid</button>
+        </div>
+
+        <label class="field-label" style="margin-top:10px;">Battery Saver (<code>power_mode</code> + <code>&lt;=25%</code> Auto-Cutoff)</label>
+        <div class="segmented-row" role="group" aria-label="Battery Saver Mode">
+          <button type="button" class="seg-btn active" data-eco="auto_eco" title="4s wake burst + stops all animations automatically when Battery <= 25%">⚡ Auto Eco</button>
+          <button type="button" class="seg-btn" data-eco="max_battery" title="Zero animations & zero sweep 100% of the time">🔋 Max Saver</button>
+          <button type="button" class="seg-btn" data-eco="vivid_always" title="Continuous animations (still pauses <= 25% low battery)">✨ Vivid</button>
+        </div>
+
+        <label class="field-label" style="margin-top:10px;">Holiday Color Theme (<code>color_theme</code>)</label>
+        <div class="theme-swatches">
+          <button type="button" class="swatch-btn active" data-theme="cranberry">
+            <span class="swatch-dot" style="background:linear-gradient(135deg,#d42426,#f5c542)"></span>
+            <span>Cranberry &amp; Gold</span>
+          </button>
+          <button type="button" class="swatch-btn" data-theme="frost">
+            <span class="swatch-dot" style="background:linear-gradient(135deg,#29b6f6,#e3f2fd)"></span>
+            <span>Frosty Ice</span>
+          </button>
+          <button type="button" class="swatch-btn" data-theme="evergreen">
+            <span class="swatch-dot" style="background:linear-gradient(135deg,#43a047,#ffcdd2)"></span>
+            <span>Pine &amp; Peppermint</span>
+          </button>
+        </div>
+
+        <label class="field-label" style="margin-top:10px;">Centerpiece Art (<code>centerpiece_style</code> + <code>PhotosConfiguration</code>)</label>
+        <div class="segmented-row" role="group" aria-label="Centerpiece Style">
+          <button type="button" class="seg-btn active" data-portrait="primary">Classic Cat</button>
+          <button type="button" class="seg-btn" data-portrait="alt">Fluffy Cat</button>
+          <button type="button" class="seg-btn" data-portrait="custom_photo">📸 Custom Photo</button>
+        </div>
+
+        <div class="toggle-grid" style="margin-top:10px;">
+          <label class="check-pill" title="WFF BooleanConfiguration: lock_info_visible (Keep Battery % & capsule info visible when watch is locked)">
+            <input type="checkbox" id="toggleLockInfo" checked />
+            <span>🔓 Show Info When Locked</span>
+          </label>
+          <label class="check-pill" title="Simulate Galaxy Watch 8 PIN-Locked state">
+            <input type="checkbox" id="toggleWatchLocked" />
+            <span>🔒 Simulate Watch Locked</span>
+          </label>
+          <label class="check-pill">
+            <input type="checkbox" id="toggleSnow" checked />
+            <span>❄️ Falling Snow + Gyro</span>
+          </label>
+          <label class="check-pill">
+            <input type="checkbox" id="toggleInspector" />
+            <span>📐 WFF 450px Slot Grid</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="section-head">
+          <h2>3. Time &amp; Christmas Countdown Test</h2>
+          <label class="inline-check">
+            <input type="checkbox" id="toggleLiveClock" checked />
+            <span>Live Clock</span>
+          </label>
+        </div>
+        <div class="preset-row">
+          <button type="button" class="chip-btn" data-date-preset="now">Today (Nov 15)</button>
+          <button type="button" class="chip-btn" data-date-preset="eve">Dec 24 (Eve)</button>
+          <button type="button" class="chip-btn" data-date-preset="xmas">Dec 25 (Xmas!)</button>
+          <button type="button" class="chip-btn" data-date-preset="tenTen">10:10 Pose</button>
+        </div>
+        <div class="slider-row" style="margin-top:8px;">
+          <span>Manual Time</span>
+          <input type="range" id="timeScrubber" min="0" max="1439" value="1134" />
+          <output id="timeScrubberOut">18:54</output>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="section-head">
+          <h2>4. Your 5 Samsung Complications</h2>
+        </div>
+
+        <!-- 1. Weather -->
+        <div class="comp-control-group" data-highlight-slot="1">
+          <div class="slider-header">
+            <strong>Slot 1 · Live Weather &amp; Sky</strong>
+            <select id="weatherCondSelect" class="mini-select">
+              <option value="sunny" selected>☀️ Sunny (Sunbeams)</option>
+              <option value="partly_day">⛅ Partly Cloudy</option>
+              <option value="windy">💨 Windy (Gusts!)</option>
+              <option value="rain">🌧️ Rainy (Raindrops!)</option>
+              <option value="storm">⛈️ Thunderstorm</option>
+              <option value="snow">❄️ Snowy</option>
+              <option value="clear_night">🌙 Starry Night</option>
+              <option value="fog">🌫️ Fog / Mist</option>
+            </select>
+          </div>
+          <div class="slider-row">
+            <span>Temp</span>
+            <input type="range" id="weatherTempSlider" min="-12" max="38" value="19" />
+            <output id="weatherTempOut">19°C</output>
+          </div>
+        </div>
+
+        <!-- 2. Sun Heat / UV Index -->
+        <div class="comp-control-group" data-highlight-slot="2">
+          <div class="slider-row">
+            <strong>Slot 2 · Sun Heat (UV)</strong>
+            <input type="range" id="uvSlider" min="0" max="11" value="3" />
+            <output id="uvOut">UV 3</output>
+          </div>
+        </div>
+
+        <!-- 3. Heart Rate -->
+        <div class="comp-control-group" data-highlight-slot="3">
+          <div class="slider-row">
+            <strong>Slot 3 · Heart Rate</strong>
+            <input type="range" id="hrSlider" min="48" max="185" value="74" />
+            <output id="hrOut">74 bpm</output>
+          </div>
+        </div>
+
+        <!-- 4. Watch Battery -->
+        <div class="comp-control-group" data-highlight-slot="4">
+          <div class="slider-row">
+            <strong>Slot 4 · Watch Battery</strong>
+            <input type="range" id="battSlider" min="5" max="100" value="86" />
+            <output id="battOut">86%</output>
+          </div>
+        </div>
+
+        <!-- 5. Samsung Health Energy Score -->
+        <div class="comp-control-group" data-highlight-slot="5">
+          <div class="slider-row">
+            <strong>Slot 5 · Energy Score</strong>
+            <input type="range" id="energySlider" min="15" max="100" value="86" />
+            <output id="energyOut">86 / 100</output>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="section-head">
+          <h2>5. Wrist-Tilt Gyro &amp; Custom Photo Test</h2>
+        </div>
+        <div class="slider-row">
+          <span>Tilt X (<code>ACCEL_X</code>)</span>
+          <input type="range" id="gyroXSlider" min="-15" max="15" value="0" />
+          <output id="gyroXOut">0°</output>
+        </div>
+        <div class="slider-row">
+          <span>Tilt Y (<code>ACCEL_Y</code>)</span>
+          <input type="range" id="gyroYSlider" min="-15" max="15" value="0" />
+          <output id="gyroYOut">0°</output>
+        </div>
+
+        <label class="upload-dropzone" for="customPhotoInput">
+          <input type="file" id="customPhotoInput" accept="image/*" hidden />
+          <span>📸 Upload Any Pet / Holiday Photo Live in Medallion</span>
+        </label>
+      </div>
+    </aside>
+  </div>
+
+  <script src="simulator.js"></script>
+</body>
+</html>

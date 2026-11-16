@@ -1,0 +1,22 @@
+# Android / Gradle local & build outputs
+watchface/.gradle/
+watchface/build/
+watchface/app/build/
+watchface/local.properties
+.gradle/
+build/
+
+# Python / OS / Editor artifacts
+__pycache__/
+*.py[cod]
+.venv/
+.DS_Store
+Thumbs.db
+*:Zone.Identifier
+*.Zone.Identifier
+*.iml
+.idea/
+
+# Keep user's raw local drop-in photos untracked by default (except README.md)
+assets/custom-art/*
+!assets/custom-art/README.md

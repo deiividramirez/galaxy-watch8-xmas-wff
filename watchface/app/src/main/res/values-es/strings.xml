@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="watch_face_name">Navidad Mascota</string>
+
+    <!-- Etiquetas de personalización en español -->
+    <string name="cfg_theme_label">Tema navideño</string>
+    <string name="theme_cranberry_label">Arándano y Oro</string>
+    <string name="theme_frost_label">Noche Helada</string>
+    <string name="theme_evergreen_label">Pino y Menta</string>
+
+    <string name="cfg_clock_label">Estilo de reloj</string>
+    <string name="clock_digital_label">Solo digital</string>
+    <string name="clock_hybrid_label">Híbrido (Digital + Agujas)</string>
+    <string name="clock_analog_label">Solo analógico</string>
+
+    <string name="cfg_power_label">Ahorro de batería</string>
+    <string name="power_auto_eco_label">Auto Eco (Ahorro inteligente)</string>
+    <string name="power_max_battery_label">Máximo ahorro (Sin animaciones)</string>
+    <string name="power_vivid_label">Vívido (Continuo)</string>
+
+    <string name="cfg_portrait_label">Imagen central</string>
+    <string name="portrait_primary_label">Gato navideño (Clásico)</string>
+    <string name="portrait_alt_label">Gato navideño (Esponjoso)</string>
+    <string name="portrait_custom_label">Foto propia (Teléfono)</string>
+
+    <string name="cfg_snow_label">Nieve navideña y giro</string>
+    <string name="cfg_lock_info_label">Mostrar info bloqueado</string>
+
+    <!-- 5 ranuras de complicaciones Samsung -->
+    <string name="slot_weather_label">Clima</string>
+    <string name="slot_uv_label">Índice UV / Calor solar</string>
+    <string name="slot_hr_label">Frecuencia cardíaca</string>
+    <string name="slot_battery_label">Batería del reloj</string>
+    <string name="slot_energy_label">Puntuación de energía (Salud)</string>
+</resources>

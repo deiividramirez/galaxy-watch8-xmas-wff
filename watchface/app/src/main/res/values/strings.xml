@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="watch_face_name">Holiday Pet Xmas</string>
+
+    <!-- User Configuration Labels -->
+    <string name="cfg_theme_label">Holiday Theme</string>
+    <string name="theme_cranberry_label">Cranberry &amp; Gold</string>
+    <string name="theme_frost_label">Frosty Midnight Ice</string>
+    <string name="theme_evergreen_label">Pine &amp; Peppermint</string>
+
+    <string name="cfg_clock_label">Clock Mode</string>
+    <string name="clock_digital_label">Digital Only</string>
+    <string name="clock_hybrid_label">Hybrid (Digital + Hands)</string>
+    <string name="clock_analog_label">Analog Only</string>
+
+    <string name="cfg_power_label">Battery Saver / Animations</string>
+    <string name="power_auto_eco_label">Auto Eco (Smart Saver)</string>
+    <string name="power_max_battery_label">Max Battery (Zero Animations)</string>
+    <string name="power_vivid_label">Vivid (Continuous Loop)</string>
+
+    <string name="cfg_portrait_label">Centerpiece Art</string>
+    <string name="portrait_primary_label">Holiday Cat (Classic)</string>
+    <string name="portrait_alt_label">Holiday Cat (Fluffy)</string>
+    <string name="portrait_custom_label">Custom Photo (Phone)</string>
+
+    <string name="cfg_snow_label">Falling Snow &amp; Gyro</string>
+    <string name="cfg_lock_info_label">Show Info When Locked</string>
+
+    <!-- 5 Samsung Complication Slot Labels -->
+    <string name="slot_weather_label">Weather</string>
+    <string name="slot_uv_label">Sun Heat / UV Index</string>
+    <string name="slot_hr_label">Heart Rate</string>
+    <string name="slot_battery_label">Watch Battery</string>
+    <string name="slot_energy_label">Energy Score (Health)</string>
+</resources>
