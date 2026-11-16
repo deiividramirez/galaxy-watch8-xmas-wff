@@ -13,11 +13,11 @@
   <div class="app-shell">
     <!-- Left / Center Stage: Authentic Galaxy Watch 8 Hardware Preview -->
     <main class="watch-stage">
-      <header class="stage-header">
+      <header class="stage-header" id="stageHeader">
         <div class="header-pill-row">
           <div class="brand-pill">
             <span class="dot-live"></span>
-            <span>Wear OS 6 · Watch Face Format v4 · <code>450×450</code> Virtual Canvas</span>
+            <span>Wear OS 6 · WFF v4 · <code id="appVersionBadge">v2.3.1</code></span>
           </div>
           <a
             class="apk-download-pill"
@@ -28,9 +28,10 @@
           >⬇️ Download Watch 8 APK</a>
         </div>
         <h1 class="stage-title">Holiday Pet Xmas <span>Watch 8 Edition</span></h1>
-        <p class="stage-subtitle">Move mouse over watch for 3D wrist-tilt snowglobe parallax · Upload any custom pet/family photo live</p>
+        <p class="stage-subtitle">Hover or touch watch for 3D snowglobe parallax · Upload any custom pet/family photo live</p>
       </header>
 
+      <div class="watch-rig-viewport" id="watchRigViewport">
       <div class="watch-rig" id="watchRig">
         <!-- Top Watch Strap -->
         <div class="watch-strap strap-top">
@@ -247,9 +248,10 @@
           <div class="strap-stitch"></div>
         </div>
       </div>
+      </div>
 
       <!-- Live WFF Hardware Compliance Telemetry Bar -->
-      <section class="telemetry-bar" aria-label="Watch Face Format Hardware Telemetry">
+      <section class="telemetry-bar" id="telemetryBar" aria-label="Watch Face Format Hardware Telemetry">
         <div class="telemetry-chip">
           <span class="t-label">Physical Screen</span>
           <strong id="telScreenSpec">44mm · 480×480 px</strong>
@@ -361,7 +363,7 @@
           </label>
         </div>
         <div class="preset-row">
-          <button type="button" class="chip-btn" data-date-preset="now">Today (Nov 15)</button>
+          <button type="button" class="chip-btn" data-date-preset="now">Today (Live)</button>
           <button type="button" class="chip-btn" data-date-preset="eve">Dec 24 (Eve)</button>
           <button type="button" class="chip-btn" data-date-preset="xmas">Dec 25 (Xmas!)</button>
           <button type="button" class="chip-btn" data-date-preset="tenTen">10:10 Pose</button>

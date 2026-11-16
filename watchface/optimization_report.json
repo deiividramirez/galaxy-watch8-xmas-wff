@@ -1,5 +1,5 @@
 {
-  "version": "2.3.0",
+  "version": "2.3.1",
   "baseline_v20": {
     "drawables_kb": 532.5,
     "apk_kb": 567.0,
@@ -10,14 +10,10 @@
   },
   "stage1_drawables": {
     "drawable_count": 71,
-    "pruned_files": [
-      "hand_second_full.webp",
-      "snow_06.webp",
-      "snow_07.webp"
-    ],
-    "zeroed_transparent_pixels": 106049,
-    "drawables_kb_pre_pass": 399.27,
-    "drawables_kb_optimized": 275.12
+    "pruned_files": [],
+    "zeroed_transparent_pixels": 375504,
+    "drawables_kb_pre_pass": 275.12,
+    "drawables_kb_optimized": 273.67
   },
   "stage2_geometry_audit": {
     "passed": true,
@@ -97,7 +93,7 @@
   },
   "stage4_wff_build_memory": {
     "apk_path": "watch8-holiday-xmas.apk",
-    "apk_kb": 310.6,
+    "apk_kb": 309.2,
     "dex_files": 0,
     "signature_verified": true,
     "max_active_mb": 8.98,
@@ -105,7 +101,7 @@
     "savings_vs_v20": {
       "active_ram_saved_pct": 48.1,
       "ambient_ram_saved_pct": 19.9,
-      "apk_size_saved_pct": 45.2
+      "apk_size_saved_pct": 45.5
     }
   }
 }

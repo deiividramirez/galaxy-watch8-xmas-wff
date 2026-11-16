@@ -25,6 +25,8 @@ DRAWABLE_DIR = ROOT / "watchface" / "app" / "src" / "main" / "res" / "drawable-n
 STRINGS_EN = ROOT / "watchface" / "app" / "src" / "main" / "res" / "values" / "strings.xml"
 STRINGS_ES = ROOT / "watchface" / "app" / "src" / "main" / "res" / "values-es" / "strings.xml"
 SET_CUSTOM_ART = ROOT / "tools" / "set_custom_art.py"
+BUMP_VERSION = ROOT / "tools" / "bump_version.py"
+STYLES_CSS = HTML_DIR / "styles.css"
 
 
 def _load_module(path: Path, name: str):
@@ -179,6 +181,28 @@ class WatchFaceProjectTests(unittest.TestCase):
         opr_pct = (lum_sum / (360 * 360)) * 100.0
         self.assertLess(opr_pct, 10.0, f"Synthesized AOD OPR {opr_pct:.2f}% is too bright for OLED burn-in safety!")
 
+    def test_version_sync_and_precommit_hook(self) -> None:
+        bump_mod = _load_module(BUMP_VERSION, "bump_version")
+        ok, info = bump_mod.check_sync()
+        self.assertTrue(ok, f"Project versions out of sync across files: {info}")
+        self.assertEqual(bump_mod.compute_next_semver("2.3.0", "patch"), "2.3.1")
+        self.assertEqual(bump_mod.compute_next_semver("2.3.9", "minor"), "2.4.0")
+        self.assertEqual(bump_mod.compute_next_semver("2.3.9", "major"), "3.0.0")
+
+        hook_file = ROOT / ".githooks" / "pre-commit"
+        installer_file = ROOT / "tools" / "install_hooks.sh"
+        self.assertTrue(hook_file.is_file(), "Missing .githooks/pre-commit")
+        self.assertTrue(installer_file.is_file(), "Missing tools/install_hooks.sh")
+
+    def test_responsive_viewport_and_overflow_guards(self) -> None:
+        css_text = STYLES_CSS.read_text(encoding="utf-8")
+        self.assertIn('id="watchRigViewport"', self.html_text)
+        self.assertIn('id="appVersionBadge"', self.html_text)
+        self.assertIn("fitWatchRigToViewport", self.js_text)
+        self.assertIn("touchmove", self.js_text)
+        self.assertIn("overflow-x: clip", css_text)
+        self.assertIn(".watch-rig-viewport", css_text)
+
     def test_no_hardcoded_local_home_paths(self) -> None:
         check_paths = [
             ROOT / "README.md",
@@ -187,7 +211,11 @@ class WatchFaceProjectTests(unittest.TestCase):
             ROOT / "watchface" / "install_to_watch8.sh",
             ROOT / "tools" / "optimize_watchface.py",
             ROOT / "tools" / "set_custom_art.py",
+            BUMP_VERSION,
+            ROOT / "tools" / "install_hooks.sh",
+            ROOT / ".githooks" / "pre-commit",
             INDEX_HTML,
+            STYLES_CSS,
             SIMULATOR_JS,
             WATCHFACE_XML,
         ]

@@ -401,7 +401,59 @@
     }
   }
 
-  // 7. Update Hardware Model, Theme, Mode & WFF v2.1 Optimizer Telemetry
+  // 7. Responsive Watch Rig Viewport Scaling (Zero X/Y Overflow on Desktop & Phones)
+  const watchRigViewport = document.getElementById("watchRigViewport");
+  const watchRig = document.getElementById("watchRig");
+  const stageHeader = document.getElementById("stageHeader");
+  const telemetryBar = document.getElementById("telemetryBar");
+
+  function fitWatchRigToViewport() {
+    if (!watchRigViewport || !watchRig) return;
+
+    // Exact symmetric pixel footprint of Watch 8 chassis + side buttons + straps
+    let naturalW = 558;
+    let naturalH = 604;
+    if (state.model === "40mm") {
+      naturalW = 516;
+      naturalH = 562;
+    } else if (state.model === "classic") {
+      naturalW = 536;
+      naturalH = 582;
+    }
+
+    const vw = document.documentElement.clientWidth || window.innerWidth;
+    const vh = window.innerHeight;
+    const isDesktop = vw > 1024 && vh >= 560;
+
+    let scale = 1;
+    if (isDesktop) {
+      const stageEl = watchRigViewport.parentElement;
+      const stageW = stageEl ? stageEl.clientWidth : vw - 460;
+      const headerH = stageHeader ? stageHeader.offsetHeight : 82;
+      const telH = telemetryBar ? telemetryBar.offsetHeight : 52;
+      const availW = Math.max(260, stageW - 20);
+      const availH = Math.max(250, vh - headerH - telH - 72);
+      scale = Math.min(1, availW / naturalW, availH / naturalH);
+    } else if (vw > vh) {
+      // Landscape phone / tablet: fit both width and landscape height cleanly
+      const availW = Math.max(240, vw - 32);
+      const availH = Math.max(240, vh - 40);
+      scale = Math.min(0.92, availW / naturalW, availH / naturalH);
+    } else {
+      // Portrait phone / tablet: depend purely on width to prevent scroll-bar URL-bar jitter
+      const availW = Math.max(240, vw - 28);
+      const maxPortraitScale = vw <= 600 ? 0.82 : 0.95;
+      scale = Math.min(maxPortraitScale, availW / naturalW);
+    }
+
+    scale = Math.max(0.42, scale);
+    watchRig.style.width = `${naturalW}px`;
+    watchRig.style.transform = `scale(${scale.toFixed(4)})`;
+    watchRigViewport.style.width = `${Math.round(naturalW * scale)}px`;
+    watchRigViewport.style.height = `${Math.round(naturalH * scale)}px`;
+  }
+
+  // Update Hardware Model, Theme, Mode & WFF Optimizer Telemetry
   function syncSceneClassesAndTelemetry() {
     watchChassis.className = `watch8-cushion model-${state.model}`;
     wffScene.className = `wff-scene theme-${state.theme} clock-${state.clockMode} mode-${state.powerMode}`;
@@ -424,7 +476,7 @@
     if (state.powerMode === "aod") {
       telRamValue.textContent = "6.10 MB / 10 MB AOD OK";
     } else {
-      telRamValue.textContent = "9.30 MB / 100 MB Active OK";
+      telRamValue.textContent = "8.98 MB / 100 MB Active OK";
     }
 
     const telFpsValue = document.getElementById("telFpsValue");
@@ -439,6 +491,7 @@
     }
 
     applyGyroParallax();
+    requestAnimationFrame(fitWatchRigToViewport);
   }
 
   // 8. Wire Interactive Controls
@@ -662,10 +715,11 @@
     });
 
     const amoledViewport = document.getElementById("amoledViewport");
-    amoledViewport.addEventListener("mousemove", (e) => {
+    function updateTiltFromPointer(clientX, clientY) {
       const rect = amoledViewport.getBoundingClientRect();
-      const nx = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-      const ny = ((e.clientY - rect.top) / rect.height) * 2 - 1;
+      if (!rect.width || !rect.height) return;
+      const nx = Math.max(-1, Math.min(1, ((clientX - rect.left) / rect.width) * 2 - 1));
+      const ny = Math.max(-1, Math.min(1, ((clientY - rect.top) / rect.height) * 2 - 1));
       state.gyroX = Math.round(nx * 15);
       state.gyroY = Math.round(ny * 15);
       gyroXSlider.value = String(state.gyroX);
@@ -673,9 +727,9 @@
       gyroXOut.textContent = `${state.gyroX}°`;
       gyroYOut.textContent = `${state.gyroY}°`;
       applyGyroParallax();
-    });
+    }
 
-    amoledViewport.addEventListener("mouseleave", () => {
+    function resetTilt() {
       state.gyroX = 0;
       state.gyroY = 0;
       gyroXSlider.value = "0";
@@ -683,7 +737,29 @@
       gyroXOut.textContent = "0°";
       gyroYOut.textContent = "0°";
       applyGyroParallax();
+    }
+
+    amoledViewport.addEventListener("mousemove", (e) => {
+      updateTiltFromPointer(e.clientX, e.clientY);
     });
+    amoledViewport.addEventListener("mouseleave", resetTilt);
+
+    // Phone touch-tilt support across the watch screen
+    amoledViewport.addEventListener(
+      "touchmove",
+      (e) => {
+        if (e.touches && e.touches.length === 1) {
+          updateTiltFromPointer(e.touches[0].clientX, e.touches[0].clientY);
+        }
+      },
+      { passive: true }
+    );
+    amoledViewport.addEventListener("touchend", resetTilt, { passive: true });
+    amoledViewport.addEventListener("touchcancel", resetTilt, { passive: true });
+
+    window.addEventListener("resize", fitWatchRigToViewport);
+    window.addEventListener("load", fitWatchRigToViewport);
+    window.addEventListener("orientationchange", () => setTimeout(fitWatchRigToViewport, 120));
 
     // Auto-resolve APK download path when hosted at GitHub Pages site root vs local html/ folder
     const apkDownloadBtn = document.getElementById("apkDownloadBtn");

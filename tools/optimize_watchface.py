@@ -490,7 +490,7 @@ def main() -> int:
     s4 = stage4_validate_build_and_measure_memory()
 
     report = {
-        "version": "2.3.0",
+        "version": "2.3.1",
         "baseline_v20": V20_BASELINE,
         "stage1_drawables": s1,
         "stage2_geometry_audit": s2,

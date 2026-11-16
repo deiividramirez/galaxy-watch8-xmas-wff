@@ -57,6 +57,8 @@ flowchart LR
 ├── .github/workflows/
 │   ├── ci.yml                       # Automated tests, WFF v4 XSD/RAM audit & Release APK
 │   └── pages.yml                    # Auto-deploys interactive simulator + APK to GitHub Pages
+├── .githooks/
+│   └── pre-commit                   # Auto-version bump, APK rebuild & test gate on commit
 ├── AGENTS.md                        # AI coding agent architecture rules & constraints
 ├── .agents/
 │   ├── agents/watchface-customizer.md
@@ -72,6 +74,8 @@ flowchart LR
 ├── tests/
 │   └── test_watchface.py            # Fast parity, localization & burn-in regression suite
 ├── tools/
+│   ├── bump_version.py              # Lockstep version bumper across Gradle, HTML & optimizer
+│   ├── install_hooks.sh             # One-command activator for .githooks/pre-commit
 │   ├── set_custom_art.py            # One-command custom image + AOD outline importer
 │   └── optimize_watchface.py        # 4-stage WebP, geometry, OPR, XSD & RAM optimizer
 ├── watchface/                       # Standalone Wear OS 6 (API 36) WFF v4 Gradle project
@@ -143,6 +147,25 @@ uv run --with pillow python3 -m unittest discover -s tests -v
 ```
 
 `tests/test_watchface.py` checks JS syntax, broken HTML/JS asset paths, 1:1 complication slot coordinate parity (`html/` vs `watchface.xml`), flat `<Scene>` configuration safety (preventing Samsung `EditorActivity` crashes), `<= 15 FPS` / zero-`TAP` sprite rules, English/Spanish `strings.xml` parity, and `< 10%` OPR custom AOD synthesis.
+
+### Git Pre-Commit Hook & Automatic Version Bumping (`.githooks/pre-commit`)
+
+Enable the repository's tracked Git hooks once after cloning:
+
+```bash
+./tools/install_hooks.sh
+```
+
+On every `git commit`, `.githooks/pre-commit` automatically:
+1. Increments `versionCode` (`+1`) and `versionName` (`patch` by default) in lockstep across `watchface/app/build.gradle.kts`, `html/index.html`, and `tools/optimize_watchface.py` via `./tools/bump_version.py`.
+2. Rebuilds & validates `watch8-holiday-xmas.apk` + `watchface/optimization_report.json` when a local Android SDK/JDK is installed.
+3. Runs `./tools/bump_version.py --check` and the `tests/test_watchface.py` suite before allowing the commit.
+
+```bash
+git commit -m "Update theme colors"                  # Auto patch bump (e.g. 2.3.0 -> 2.3.1)
+BUMP=minor git commit -m "Add new complication"      # Auto minor bump (e.g. 2.3.1 -> 2.4.0)
+SKIP_VERSION_BUMP=1 git commit -m "Docs typo fix"    # Keep version unchanged, still run tests
+```
 
 ### GitHub Actions CI & Releases (`.github/workflows/ci.yml`)
 

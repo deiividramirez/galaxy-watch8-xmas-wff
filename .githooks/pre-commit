@@ -1,0 +1,103 @@
+#!/usr/bin/env bash
+# ==============================================================================
+# Git Pre-Commit Hook — Auto-Version Bump, APK Rebuild & Parity Quality Gate
+# ==============================================================================
+# Activated once per clone via:
+#   ./tools/install_hooks.sh
+#
+# Environment Controls:
+#   BUMP=minor git commit ...          # Bump minor (2.3.x -> 2.4.0) instead of patch
+#   BUMP=major git commit ...          # Bump major (2.x.y -> 3.0.0)
+#   SKIP_VERSION_BUMP=1 git commit ... # Keep current version, still run tests
+#   SKIP_APK_BUILD=1 git commit ...    # Skip local Gradle APK rebuild
+#   SKIP_PRECOMMIT=1 git commit ...    # Bypass hook completely
+# ==============================================================================
+set -euo pipefail
+
+if [[ "${SKIP_PRECOMMIT:-0}" == "1" ]]; then
+  echo "[pre-commit] SKIP_PRECOMMIT=1 set — skipping pre-commit hook."
+  exit 0
+fi
+
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+cd "${REPO_ROOT}"
+
+run_py() {
+  if command -v uv >/dev/null 2>&1; then
+    uv run --with pillow python3 "$@"
+  else
+    python3 "$@"
+  fi
+}
+
+has_local_android_toolchain() {
+  local has_java=0
+  local has_sdk=0
+
+  if [[ -n "${JAVA_HOME:-}" && -x "${JAVA_HOME}/bin/java" ]] || [[ -x "${HOME}/.local/jdk/bin/java" ]] || command -v java >/dev/null 2>&1; then
+    has_java=1
+  fi
+
+  if [[ -n "${ANDROID_HOME:-}" && -d "${ANDROID_HOME}" ]] || \
+     [[ -n "${ANDROID_SDK_ROOT:-}" && -d "${ANDROID_SDK_ROOT}" ]] || \
+     [[ -d "${HOME}/Android/Sdk" ]] || \
+     [[ -d "${HOME}/Library/Android/sdk" ]]; then
+    has_sdk=1
+  fi
+
+  [[ "${has_java}" -eq 1 && "${has_sdk}" -eq 1 ]]
+}
+
+# 1. Auto-bump version (unless nothing new is staged, user already staged a bump, or SKIP_VERSION_BUMP=1)
+BUMPED=0
+if ! git diff --cached --quiet; then
+  if [[ "${SKIP_VERSION_BUMP:-0}" == "1" ]]; then
+    echo "[pre-commit] SKIP_VERSION_BUMP=1 — keeping current version."
+  elif git diff --cached -U0 -- watchface/app/build.gradle.kts | grep -Eq '^\+.*version(Code|Name)\s*='; then
+    echo "[pre-commit] Explicit version change already staged in build.gradle.kts — skipping auto-bump."
+    BUMPED=1
+  else
+    BUMP_PART="${BUMP:-patch}"
+    echo "[pre-commit] Auto-bumping ${BUMP_PART} version..."
+    run_py "${REPO_ROOT}/tools/bump_version.py" --part "${BUMP_PART}"
+    BUMPED=1
+  fi
+fi
+
+# 2. Rebuild signed APK & optimization report if version bumped or watchface/tools changed
+NEEDS_APK=0
+if [[ "${BUMPED}" -eq 1 ]]; then
+  NEEDS_APK=1
+elif git diff --cached --name-only | grep -Eq '^(watchface/|tools/)'; then
+  NEEDS_APK=1
+fi
+
+if [[ "${NEEDS_APK}" -eq 1 && "${SKIP_APK_BUILD:-0}" != "1" ]]; then
+  if has_local_android_toolchain; then
+    echo "[pre-commit] Rebuilding & validating Watch 8 APK with updated version..."
+    "${REPO_ROOT}/optimize_watchface.sh"
+  else
+    echo "[pre-commit] Local Android SDK/JDK not detected — skipping local APK rebuild (CI will build & validate)."
+  fi
+fi
+
+# 3. Re-stage synchronized version & build artifacts if modified
+SYNC_FILES=(
+  "watchface/app/build.gradle.kts"
+  "tools/optimize_watchface.py"
+  "html/index.html"
+  "watchface/optimization_report.json"
+  "watch8-holiday-xmas.apk"
+)
+for f in "${SYNC_FILES[@]}"; do
+  if [[ -f "${REPO_ROOT}/${f}" ]] && ! git diff --quiet -- "${f}"; then
+    git add "${f}"
+  fi
+done
+
+# 4. Enforce version lockstep & run fast parity/regression test suite
+echo "[pre-commit] Verifying version sync & running automated test suite..."
+run_py "${REPO_ROOT}/tools/bump_version.py" --check
+run_py -m unittest discover -s "${REPO_ROOT}/tests"
+
+echo "[pre-commit] All checks passed!"
